@@ -1,7 +1,8 @@
+package com.classes;
+
 import java.util.Set;
 
-public interface Place
-{
+public interface Place {
     //Add the PlaceListener pl to this place. 
     //Note: A place can have multiple listeners
     public void addListener(PlaceListener pl);
