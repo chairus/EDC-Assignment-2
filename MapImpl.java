@@ -88,7 +88,6 @@ public class MapImpl implements Map {
 
     //Return a set containing all the places in this map
     public Set<Place> getPlaces() {
-        // return new LinkedHashSet<Place>(this.places);
         return this.places;
     }
     
@@ -104,20 +103,28 @@ public class MapImpl implements Map {
     public Road newRoad(Place from, Place to, String roadName, int length) 
         throws IllegalArgumentException {
         
-        return null;
+        if (this.findPlace(from.getName()) == null ||
+            this.findPlace(to.getName()) == null ||
+            !checkRoadName(roadName) ||
+            length < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        Road r = new RoadImpl(from, to, roadName, length);
+
+        return r;
     }
 
 
     //Remove a road r from the map
     //If the road does not exist, returns without error
     public void deleteRoad(Road r) {
-
+        roads.remove(r);
     }
 
 
     //Return a set containing all the roads in this map
     public Set<Road> getRoads() {
-        // return new LinkedHashSet<Road>(this.roads);
         return this.roads;
     }
     
@@ -193,6 +200,21 @@ public class MapImpl implements Map {
         // or underscore.
         if (!placeName.matches(regex)) {
             return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if the given road name satisfies the requirements set out in the specification.
+     */
+    private boolean checkRoadName(String roadName) {
+        String regex = "([a-zA-Z]([a-zA-Z]|\\d)*)";
+        // check if the roadName starts with a letter and followed by zero or more letters and digits.
+        if (roadName != "") {
+            if (!roadName.matches(regex)) {
+                return false;
+            }
         }
 
         return true;
