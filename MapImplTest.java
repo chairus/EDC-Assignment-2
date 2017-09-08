@@ -10,7 +10,7 @@ public class MapImplTest {
     public static void main(String[] args) {
         int numberOfTestCases = 0;
         int numberOfTestCasesPassed = 0;
-        Map map = new MapImpl();
+        MapImpl map = new MapImpl();
         Place place;
         boolean result;
 
@@ -67,6 +67,16 @@ public class MapImplTest {
             numberOfTestCasesPassed += 1;
         }
         printResult(!result);
+        System.out.println("Adding a valid and existing place: A 23 92");
+        numberOfTestCases += 1;
+        place = addPlace(map, "A", 23, 92);
+        System.out.print("Checking if place has not been successfully added...");
+        result = isEqualPlace(place, new PlaceImpl("A", 23, 92));
+        if (!result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(!result);
+        map.printPlaces();
 
 
 

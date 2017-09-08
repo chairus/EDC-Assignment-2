@@ -7,7 +7,8 @@
 package com.classes;
 
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.LinkedHashSet;
+import java.util.Objects;
 
 public class PlaceImpl implements Place {
     Set<Road> incomingRoads;    // contains all roads that reach this place
@@ -36,7 +37,7 @@ public class PlaceImpl implements Place {
 
     //Return a set containing all roads that reach this place
     public Set<Road> toRoads() {
-        Set<Road> roads = new TreeSet<>();
+        Set<Road> roads = new LinkedHashSet<>();
 
         return roads;
     }
@@ -93,8 +94,44 @@ public class PlaceImpl implements Place {
     //in the form (without the quotes, of course!) :
     //"placeName(xPos,yPos)"  
     public String toString() {
-        String str = "";
+        String str;
+
+        str = new String(this.placeName + "(" + this.xPos + "," + this.yPos + ")");
 
         return str;
+    }
+
+    @Override
+    public boolean equals(Object p) {
+        if (p == null) {
+            return false;
+        }
+
+        if (this == p) {
+            return true;
+        }
+
+        if (!(p instanceof PlaceImpl)) {
+            return false;
+        }
+
+        return equalsHelper(p);
+    }
+
+    private boolean equalsHelper(Object p) {
+        PlaceImpl pl = (PlaceImpl)p;
+
+        if (pl.getName().compareTo(this.placeName) != 0 &&
+            pl.getX() != this.xPos &&
+            pl.getY() != this.yPos) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(placeName, xPos, yPos);
     }
 }

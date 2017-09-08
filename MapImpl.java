@@ -53,7 +53,7 @@ public class MapImpl implements Map {
             throw new IllegalArgumentException();
         }
 
-        Place place = new PlaceImpl(placeName, xPos, yPos);
+        PlaceImpl place = new PlaceImpl(placeName, xPos, yPos);
         
         if (!places.add(place)) {
             throw new IllegalArgumentException();
@@ -66,20 +66,29 @@ public class MapImpl implements Map {
     //Remove a place from the map
     //If the place does not exist, returns without error
     public void deletePlace(Place s) {
-
+        places.remove(s);
     }
 
 
     //Find and return the Place with the given name
     //If no place exists with given name, return NULL
     public Place findPlace(String placeName) {
-        Place place = null;
-        return place;
+        Place p = null;
+
+        for (Place place: places) {
+            if (place.getName().compareTo(placeName) == 0) {
+                p = place;
+                break;
+            }
+        }
+
+        return p;
     }
 
 
     //Return a set containing all the places in this map
     public Set<Place> getPlaces() {
+        // return new LinkedHashSet<Place>(this.places);
         return this.places;
     }
     
@@ -108,6 +117,7 @@ public class MapImpl implements Map {
 
     //Return a set containing all the roads in this map
     public Set<Road> getRoads() {
+        // return new LinkedHashSet<Road>(this.roads);
         return this.roads;
     }
     
@@ -179,10 +189,16 @@ public class MapImpl implements Map {
         }
 
         String regex = "([a-zA-Z]([a-zA-Z]|\\d|_)*)";
+        // check if the placeName starts with a letter and followed by zero or more letter, digit
+        // or underscore.
         if (!placeName.matches(regex)) {
             return false;
         }
 
         return true;
+    }
+
+    public void printPlaces() {
+        System.out.println(this.places);
     }
 }
