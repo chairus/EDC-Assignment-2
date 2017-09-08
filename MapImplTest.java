@@ -7,12 +7,11 @@
 package com.classes;
 
 public class MapImplTest {
+    static int numberOfTestCases = 0;
+    static int numberOfTestCasesPassed = 0;
+
     public static void main(String[] args) {
-        int numberOfTestCases = 0;
-        int numberOfTestCasesPassed = 0;
         MapImpl map = new MapImpl();
-        Place place;
-        boolean result;
 
         /**
          * ==============================================
@@ -22,6 +21,19 @@ public class MapImplTest {
         System.out.println("==============================================");
         System.out.println("\t TEST newplace() method");
         System.out.println("==============================================");
+        testNewPlaceMethod(map);
+        map.printPlaces();
+
+
+
+
+        printTestCasesResult(numberOfTestCases, numberOfTestCasesPassed);
+    }
+
+    private static void testNewPlaceMethod(Map map) {
+        Place place;
+        boolean result;
+        
         System.out.println("Adding a valid place: Adelaide 12 10");
         numberOfTestCases += 1;
         place = addPlace(map, "Adelaide", 12, 10);
@@ -76,12 +88,6 @@ public class MapImplTest {
             numberOfTestCasesPassed += 1;
         }
         printResult(!result);
-        map.printPlaces();
-
-
-
-
-        printTestCasesResult(numberOfTestCases, numberOfTestCasesPassed);
     }
 
     private static Place addPlace(Map mp, String placeName, int xpos, int ypos) {
