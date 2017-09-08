@@ -49,6 +49,15 @@ public class MapImplTest {
             numberOfTestCasesPassed += 1;
         }
         printResult(result);
+        System.out.println("Adding an invalid place: Ade+laide 23 92");
+        numberOfTestCases += 1;
+        place = addPlace(map, "Ade+laide", 23, 92);
+        System.out.print("Checking if place has not been successfully added...");
+        result = isEqualPlace(place, new PlaceImpl("Ade+laide", 23, 92));
+        if (!result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(!result);
         System.out.println("Adding an invalid place: 2Adelaide 12 10");
         numberOfTestCases += 1;
         place = addPlace(map, "2Adelaide", 12, 10);
@@ -61,7 +70,7 @@ public class MapImplTest {
 
 
 
-        
+
         printTestCasesResult(numberOfTestCases, numberOfTestCasesPassed);
     }
 

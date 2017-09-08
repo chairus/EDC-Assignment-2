@@ -97,9 +97,4 @@ public class PlaceImpl implements Place {
 
         return str;
     }
-
-    // @Override
-    // public int compareTo(PlaceImpl p) {
-
-    // }
 }

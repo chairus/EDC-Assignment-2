@@ -178,9 +178,8 @@ public class MapImpl implements Map {
             return false;
         }
 
-        char[] firstChar = new char[1];
-        placeName.getChars(0, 1, firstChar, 0);
-        if (!Character.isLetter(firstChar[0])) {    // check if the first character is a letter
+        String regex = "([a-zA-Z]([a-zA-Z]|\\d|_)*)";
+        if (!placeName.matches(regex)) {
             return false;
         }
 
