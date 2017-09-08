@@ -35,7 +35,7 @@ public class MapImpl implements Map {
     
     //Delete the MapListener ml from this map.
     public void deleteListener(MapListener ml) {
-
+        
     }
 
 
@@ -53,9 +53,13 @@ public class MapImpl implements Map {
             throw new IllegalArgumentException();
         }
 
-        PlaceImpl place = new PlaceImpl(placeName, xPos, yPos);
+        Place place = new PlaceImpl(placeName, xPos, yPos);
         
-        if (!places.add(place)) {
+        // if (!places.add(place)) {
+        //     throw new IllegalArgumentException();
+        // }
+
+        if (!addPlace(place)) {
             throw new IllegalArgumentException();
         }
         
@@ -112,7 +116,11 @@ public class MapImpl implements Map {
 
         Road r = new RoadImpl(from, to, roadName, length);
         
-        if (!roads.add(r)) {
+        // if (!roads.add(r)) {
+        //     throw new IllegalArgumentException();
+        // }
+
+        if (!addRoad(r)) {
             throw new IllegalArgumentException();
         }
 
@@ -202,8 +210,16 @@ public class MapImpl implements Map {
     //Returns the total distance of the trip.
     //Returns -1, if there is no route from start to end
     public int getTripDistance() {
+        int totalDistance = -1;
 
-        return -1;
+        if (this.startPlace == null || this.endPlace == null) {
+            return totalDistance;
+        }
+
+        // Compute total distance of the trip
+
+
+        return totalDistance;
     }
 
 
@@ -221,6 +237,90 @@ public class MapImpl implements Map {
         String str = "";
 
         return str;
+    }
+
+    /**
+     * Attempts to add a place in the map. If the place already exists in the map the method will
+     * return false, otherwise true and adds the place.
+     */
+    private boolean addPlace(Place place) {
+        for (Place p: this.places) {
+            if (isEqualPlace(place, p)) {
+                return false;
+            }
+        }
+
+        this.places.add(place);
+
+        return true;
+    }
+
+    private boolean isEqualPlace(Place pl1, Place pl2) {
+        if (pl1 == pl2) {
+            return true;
+        }
+
+        if ((pl1 == null && pl2 != null) || pl1 != null && pl2 == null) {
+            return false;
+        }
+
+        if (pl1.getName().compareTo(pl2.getName()) != 0) {
+            return false;
+        }
+
+        if (!(pl1.getX() == pl2.getX())) {
+            return false;
+        }
+
+        if (!(pl1.getY() == pl2.getY())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Attempts to add a road in the map. If the road already exists in the map the method will
+     * return false, otherwise true and adds the road.
+     */
+    private boolean addRoad(Road road) {
+        for (Road r: this.roads) {
+            if (isEqualRoad(road, r)) {
+                return false;
+            }
+        }
+
+        this.roads.add(road);
+
+        return true;
+    }
+
+    private boolean isEqualRoad(Road r1, Road r2) {
+        if (r1 == r2) {
+            return true;
+        }
+
+        if ((r1 == null && r2 != null) || (r1 != null && r2 == null)) {
+            return false;
+        }
+
+        if (r1.roadName().compareTo(r2.roadName()) != 0) {
+            return false;
+        }
+
+        if (!isEqualPlace(r1.firstPlace(), r2.firstPlace())) {
+            return false;
+        }
+
+        if (!isEqualPlace(r1.secondPlace(), r2.secondPlace())) {
+            return false;
+        }
+
+        if (r1.length() != r2.length()) {
+            return false;
+        }
+        
+        return true;
     }
 
     /**
