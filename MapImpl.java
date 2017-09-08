@@ -111,6 +111,10 @@ public class MapImpl implements Map {
         }
 
         Road r = new RoadImpl(from, to, roadName, length);
+        
+        if (!roads.add(r)) {
+            throw new IllegalArgumentException();
+        }
 
         return r;
     }
@@ -220,7 +224,12 @@ public class MapImpl implements Map {
         return true;
     }
 
+    /* ========== DEBUGGIN PURPOSES ========== */
     public void printPlaces() {
         System.out.println(this.places);
+    }
+
+    public void printRoads() {
+        System.out.println(this.roads);
     }
 }

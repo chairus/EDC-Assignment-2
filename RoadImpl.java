@@ -1,5 +1,7 @@
 package com.classes;
 
+import java.util.Objects;
+
 public class RoadImpl implements Road {
     Place firstPlace, secondPlace;
     String roadName;
@@ -63,10 +65,53 @@ public class RoadImpl implements Road {
     //"firstPlace(roadName:length)secondPlace"
     public String toString() {
         String str = new String(this.firstPlace.getName() +
-                                "(" + this.roadName + ")" + 
+                        "(" + this.roadName + ":" + this.length + ")" + 
                                 this.secondPlace.getName());
 
         return str;
+    }
+
+    @Override
+    public boolean equals(Object r) {
+        if (r == null) {
+            return false;
+        }
+
+        if (this == r) {
+            return true;
+        }
+
+        if (!(r instanceof RoadImpl)) {
+            return false;
+        }
+
+        return equalsHelper(r);
+    }
+
+    private boolean equalsHelper(Object r) {
+        RoadImpl rd = (RoadImpl)r;
+
+        if (rd.roadName().compareTo(this.roadName) != 0 &&
+            placesAreEqual(rd.firstPlace(), rd.secondPlace())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean placesAreEqual(Place p1, Place p2) {
+        if (p1.getName().compareTo(p2.getName()) != 0 &&
+            p1.getX() != p2.getX() &&
+            p1.getY() != p2.getY()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.roadName, this.firstPlace, this.secondPlace, this.length);
     }
 
     private void storePlaces(Place p1, Place p2) {

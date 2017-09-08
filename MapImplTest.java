@@ -46,7 +46,19 @@ public class MapImplTest {
         System.out.println("\t TEST newRoad() method");
         System.out.println("==============================================");
         testNewRoadMethod(map);
-        
+        System.out.print("Current roads stored in the map: ");
+        map.printRoads();
+        /**
+         * ==============================================
+         * TEST deleteRoad() METHOD
+         * ==============================================
+         */
+        System.out.println("==============================================");
+        System.out.println("\t TEST deleteRoad() method");
+        System.out.println("==============================================");
+        testDeleteRoadMethod(map);
+        System.out.print("Current roads stored in the map: ");
+        map.printRoads();
 
 
         printTestCasesResult(numberOfTestCases, numberOfTestCasesPassed);
@@ -190,7 +202,7 @@ public class MapImplTest {
         System.out.println("Adding a road that has a negative length: Adelaide 12 10, Arndale 93 21, b, -50");
         numberOfTestCases += 1;
         road = addRoad(mp, p1, p2, "b", -50);
-        System.out.print("Checking if road has been successfully added...");
+        System.out.print("Checking if road has not been successfully added...");
         result = isEqualRoad(road, null);
         if (result) {
             numberOfTestCasesPassed += 1;
@@ -239,6 +251,49 @@ public class MapImplTest {
             numberOfTestCasesPassed += 1;
         }
         printResult(result);
+    }
+
+    private static void testDeleteRoadMethod(Map mp) {
+        Road road;
+        Place p1,p2;
+        boolean result;
+        Set<Road> set = mp.getRoads();
+
+        System.out.println("Deleting road: Adelaide 12 10, Arndale 93 21, LeHunte, 50");
+        numberOfTestCases += 1;
+        p1 = new PlaceImpl("Adelaide", 12, 10);
+        p2 = new PlaceImpl("Arndale", 93, 21);
+        road = new RoadImpl(p1, p2, "LeHunte", 50);
+        mp.deleteRoad(road);
+        System.out.print("Checking if road has been successfully removed...");
+        result = checkRoadExistInSet(mp.getRoads(), road);
+        if (!result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(!result);
+
+        System.out.println("Deleting road: Adelaide 12 10, Arndale 93 21, Piccolo, 38");
+        numberOfTestCases += 1;
+        p1 = new PlaceImpl("Adelaide", 12, 10);
+        p2 = new PlaceImpl("Arndale", 93, 21);
+        road = new RoadImpl(p1, p2, "Piccolo", 38);
+        mp.deleteRoad(road);
+        System.out.print("Checking if no road has been removed...");
+        result = set.containsAll(mp.getRoads());
+        if (result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(result);
+    }
+
+    private static boolean checkRoadExistInSet(Set<Road> rds, Road rd) {
+        for (Road road: rds) {
+            if (isEqualRoad(road, rd)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static Road addRoad(Map mp, Place p1, Place p2, String name, int length) {
