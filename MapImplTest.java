@@ -59,6 +59,17 @@ public class MapImplTest {
         testDeleteRoadMethod(map);
         System.out.print("Current roads stored in the map: ");
         map.printRoads();
+        /**
+         * ==============================================
+         * TEST setStartPlace() METHOD
+         * ==============================================
+         */
+        System.out.println("==============================================");
+        System.out.println("\t TEST setStartPlace() method");
+        System.out.println("==============================================");
+        testSetStartPlaceMethod(map);
+        System.out.print("Current places stored in the map: ");
+        map.printPlaces();
 
 
         printTestCasesResult(numberOfTestCases, numberOfTestCasesPassed);
@@ -284,6 +295,64 @@ public class MapImplTest {
             numberOfTestCasesPassed += 1;
         }
         printResult(result);
+    }
+
+    private static void testSetStartPlaceMethod(Map mp) {
+        Place p;
+        boolean result;
+
+        System.out.println("Setting start place: Adelaide 12 10");
+        numberOfTestCases += 1;
+        p = setStartPlace(mp, new PlaceImpl("Adelaide", 12, 10));
+        System.out.print("Checking if start place has been set...");
+        result = isEqualPlace(p, mp.getStartPlace());
+        if (result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(result);
+
+        System.out.println("Setting start place: null");
+        numberOfTestCases += 1;
+        p = setStartPlace(mp, null);
+        System.out.print("Checking if start place has been unset...");
+        result = isEqualPlace(p, mp.getStartPlace());
+        if (result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(result);
+
+        System.out.println("Setting start place that doesn't exist in the map: Adelaide 20 10");
+        numberOfTestCases += 1;
+        p = setStartPlace(mp, new PlaceImpl("Adelaide", 20, 10));
+        System.out.print("Checking if start place has not been set...");
+        result = isEqualPlace(p, null);
+        if (result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(result);
+
+        System.out.println("Setting start place that doesn't exist in the map: Churchill 20 10");
+        numberOfTestCases += 1;
+        p = setStartPlace(mp, new PlaceImpl("Churchill", 20, 10));
+        System.out.print("Checking if start place has not been set...");
+        result = isEqualPlace(p, null);
+        if (result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(result);
+    }
+
+    private static Place setStartPlace(Map mp, Place p) {
+        Place pl;
+
+        try {
+            mp.setStartPlace(p);
+            pl = p;
+        } catch (IllegalArgumentException e) {
+            pl = null;
+        }
+
+        return pl;
     }
 
     private static boolean checkRoadExistInSet(Set<Road> rds, Road rd) {

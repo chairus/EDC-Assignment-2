@@ -138,7 +138,23 @@ public class MapImpl implements Map {
     //Throws IllegalArgumentException if the place p is not in the map
     public void setStartPlace(Place p)
         throws IllegalArgumentException {
+    
+        if (p == null) {
+            this.startPlace = null;
+            return;
+        }
+        
+        Place pl = this.findPlace(p.getName());
 
+        if (pl == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if ((pl.getX() != p.getX()) || (pl.getY() != p.getY())) {
+            throw new IllegalArgumentException();
+        }
+
+        this.startPlace = p;
     }
 
 
@@ -154,6 +170,22 @@ public class MapImpl implements Map {
     public void setEndPlace(Place p)
         throws IllegalArgumentException {
 
+        if (p == null) {
+            this.endPlace = null;
+            return;
+        }
+        
+        Place pl = this.findPlace(p.getName());
+
+        if (pl == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if ((pl.getX() != p.getX()) || (pl.getY() != p.getY())) {
+            throw new IllegalArgumentException();
+        }
+
+        this.endPlace = p;
     }
 
 
