@@ -35,7 +35,7 @@ public class MapImpl implements Map {
     
     //Delete the MapListener ml from this map.
     public void deleteListener(MapListener ml) {
-        
+        this.listeners.remove(ml);
     }
 
 
@@ -243,19 +243,19 @@ public class MapImpl implements Map {
         String str = "";
 
         for (Place place: places) {
-            str.concat("PLACE" + place.toString() + "\n");
+            str += "PLACE " + place.toString() + "\n";
         }
 
         for (Road road: roads) {
-            str.concat("ROAD" + road.toString() + "\n");
+            str += "ROAD " + road.toString() + "\n";
         }
 
         if (startPlace != null) {
-            str.concat("START" + startPlace.getName() + "\n");
+            str += "START " + startPlace.getName() + "\n";
         }
 
         if (endPlace != null) {
-            str.concat("END" + endPlace.getName() + "\n");
+            str += "END " + endPlace.getName() + "\n";
         }
 
         return str;
@@ -382,6 +382,8 @@ public class MapImpl implements Map {
 
     private int computeTotalDistance() {
         int totalDistance = -1;
+
+        
         return totalDistance;
     }
 

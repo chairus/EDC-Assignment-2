@@ -70,7 +70,19 @@ public class MapImplTest {
         testSetStartPlaceMethod(map);
         System.out.print("Current places stored in the map: ");
         map.printPlaces();
+        /**
+         * ==============================================
+         * TEST addListener() and deleteListener METHOD
+         * ==============================================
+         */
+        // System.out.println("==============================================");
+        // System.out.println("TEST addListener() and deleteListener() method");
+        // System.out.println("==============================================");
+        // testSetStartPlaceMethod(map);
+        // System.out.print("Current places stored in the map: ");
 
+
+        System.out.println(map);
 
         printTestCasesResult(numberOfTestCases, numberOfTestCasesPassed);
     }
