@@ -55,13 +55,13 @@ public class MapImpl implements Map {
 
         Place place = new PlaceImpl(placeName, xPos, yPos);
         
-        // if (!places.add(place)) {
-        //     throw new IllegalArgumentException();
-        // }
-
-        if (!addPlace(place)) {
+        if (!places.add(place)) {
             throw new IllegalArgumentException();
         }
+
+        // if (!addPlace(place)) {
+        //     throw new IllegalArgumentException();
+        // }
         
         return place;
     }
@@ -116,13 +116,13 @@ public class MapImpl implements Map {
 
         Road r = new RoadImpl(from, to, roadName, length);
         
-        // if (!roads.add(r)) {
-        //     throw new IllegalArgumentException();
-        // }
-
-        if (!addRoad(r)) {
+        if (!roads.add(r)) {
             throw new IllegalArgumentException();
         }
+
+        // if (!addRoad(r)) {
+        //     throw new IllegalArgumentException();
+        // }
 
         return r;
     }
@@ -210,14 +210,20 @@ public class MapImpl implements Map {
     //Returns the total distance of the trip.
     //Returns -1, if there is no route from start to end
     public int getTripDistance() {
-        int totalDistance = -1;
+        int totalDistance;
 
         if (this.startPlace == null || this.endPlace == null) {
+            totalDistance = -1;
             return totalDistance;
         }
 
+        if (isEqualPlace(this.startPlace, this.endPlace)) {
+            totalDistance = 0;
+            return totalDistance;
+        }
+        
         // Compute total distance of the trip
-
+        totalDistance = computeTotalDistance();
 
         return totalDistance;
     }
@@ -236,8 +242,26 @@ public class MapImpl implements Map {
     public String toString() {
         String str = "";
 
+        for (Place place: places) {
+            str.concat("PLACE" + place.toString() + "\n");
+        }
+
+        for (Road road: roads) {
+            str.concat("ROAD" + road.toString() + "\n");
+        }
+
+        if (startPlace != null) {
+            str.concat("START" + startPlace.getName() + "\n");
+        }
+
+        if (endPlace != null) {
+            str.concat("END" + endPlace.getName() + "\n");
+        }
+
         return str;
     }
+
+    /* ============================== DEFINED HELPER METHODS ============================== */
 
     /**
      * Attempts to add a place in the map. If the place already exists in the map the method will
@@ -354,6 +378,11 @@ public class MapImpl implements Map {
         }
 
         return true;
+    }
+
+    private int computeTotalDistance() {
+        int totalDistance = -1;
+        return totalDistance;
     }
 
     /* ========== DEBUGGIN PURPOSES ========== */
