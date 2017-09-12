@@ -152,6 +152,10 @@ public class MapImpl implements Map {
         throws IllegalArgumentException {
     
         if (p == null) {
+            if (this.startPlace != null) {
+                PlaceImpl placeImpl = (PlaceImpl)this.findPlace(this.startPlace.getName());
+                placeImpl.setStartPlace(false);
+            }
             this.startPlace = null;
             return;
         }
@@ -185,6 +189,10 @@ public class MapImpl implements Map {
         throws IllegalArgumentException {
 
         if (p == null) {
+            if (this.endPlace != null) {
+                PlaceImpl placeImpl = (PlaceImpl)this.findPlace(this.endPlace.getName());
+                placeImpl.setEndPlace(false);
+            }
             this.endPlace = null;
             return;
         }

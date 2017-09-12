@@ -92,7 +92,7 @@ public class MapImplTest {
         Place a_ = new PlaceImpl("A_", 23, 92);
 
         map.setEndPlace(arndale);
-        map.setStartPlace(cleland);
+        // map.setStartPlace(cleland);
         System.out.println("Start place: " + map.getStartPlace());
         System.out.println("End place: " + map.getEndPlace());
 
