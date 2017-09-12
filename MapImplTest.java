@@ -88,10 +88,12 @@ public class MapImplTest {
         Place botanic = new PlaceImpl("Botanic", 91, 101);
         Place costco = new PlaceImpl("Costco", 23, 30);
         Place arndale = new PlaceImpl("Arndale", 93, 21);
+        Place rundle = new PlaceImpl("Rundle", 11, 22);
         Place a_ = new PlaceImpl("A_", 23, 92);
 
         map.setEndPlace(cleland);
-        System.out.println("Start place:" + map.getStartPlace());
+        map.setStartPlace(rundle);
+        System.out.println("Start place: " + map.getStartPlace());
         System.out.println("End place: " + map.getEndPlace());
 
         int totalDistance = map.getTripDistance();

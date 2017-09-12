@@ -422,6 +422,13 @@ public class MapImpl implements Map {
         return totalDistance;
     }
 
+    /**
+     * This method finds a road in the given list of roads where one end of it is equal to the given
+     * place argument. This method returns the found road otherwise null.
+     * @param rList - The list of roads
+     * @param p - The place to search for
+     * @return Road - The found road
+     */
     private Road findRoadWithPlace(List<Road> rList, Place p) {
         Road foundRoad = null;
         for (Road r: rList) {
