@@ -414,10 +414,10 @@ public class MapImpl implements Map {
      * is a partition in the graph) and the second list is the set of roads that belong to the 
      * MST set.
      */
-    private void MST(List<Road> sRoads, List<ArrayList<Place>> setOfPlaces, List<Road> setOfRoads) {
+    private void MST(List<Road> sortedRoads, List<ArrayList<Place>> setOfPlaces, List<Road> setOfRoads) {
         int numberOfPlaces = this.places.size();
 
-        for (Road r: sRoads) {
+        for (Road r: sortedRoads) {
             findSetAndMergePlace(r, setOfPlaces, setOfRoads);
             // if (setOfRoads.size() == numberOfPlaces - 1) {
             //     break;
@@ -425,6 +425,7 @@ public class MapImpl implements Map {
         }
 
         System.out.println("MST roads: " + setOfRoads);
+        System.out.println("Set of places: " + setOfPlaces);
     }
 
     /**
@@ -439,7 +440,7 @@ public class MapImpl implements Map {
         Place p2 = r.secondPlace();
         boolean foundSetForP1 = false;
         boolean foundSetForP2 = false;
-        System.out.println("SetofPlaces: " + sp);
+        // System.out.println("SetofPlaces: " + sp);
         while (k < sp.size()) {
             if (sp.get(k).contains(p1) && !foundSetForP1) {
                 System.out.println(sp.get(k));
@@ -459,9 +460,9 @@ public class MapImpl implements Map {
             k++;
         }
 
-        System.out.println("FirstPlace: " + p1);
-        System.out.println("SecondPlace: " + p2);
-        System.out.println("i: " + i + " j: " + j);
+        // System.out.println("FirstPlace: " + p1);
+        // System.out.println("SecondPlace: " + p2);
+        // System.out.println("i: " + i + " j: " + j);
 
         ArrayList<Place> newSet;
         // Merge two sets s1 and s2, if they belong to different sets and add the road to the 

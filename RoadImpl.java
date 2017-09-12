@@ -96,7 +96,7 @@ public class RoadImpl implements Road {
     private boolean equalsHelper(Object r) {
         RoadImpl rd = (RoadImpl)r;
 
-        if (rd.roadName().compareTo(this.roadName) != 0 &&
+        if (rd.roadName().compareTo(this.roadName) != 0 ||
             placesAreEqual(rd.firstPlace(), rd.secondPlace())) {
             return false;
         }
@@ -105,8 +105,8 @@ public class RoadImpl implements Road {
     }
 
     private boolean placesAreEqual(Place p1, Place p2) {
-        if (p1.getName().compareTo(p2.getName()) != 0 &&
-            p1.getX() != p2.getX() &&
+        if (p1.getName().compareTo(p2.getName()) != 0 ||
+            p1.getX() != p2.getX() ||
             p1.getY() != p2.getY()) {
             return false;
         }
