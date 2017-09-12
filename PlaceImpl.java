@@ -121,8 +121,8 @@ public class PlaceImpl implements Place {
     private boolean equalsHelper(Object p) {
         PlaceImpl pl = (PlaceImpl)p;
 
-        if (pl.getName().compareTo(this.placeName) != 0 &&
-            pl.getX() != this.xPos &&
+        if (pl.getName().compareTo(this.placeName) != 0 ||
+            pl.getX() != this.xPos ||
             pl.getY() != this.yPos) {
             return false;
         }

@@ -84,8 +84,21 @@ public class MapImplTest {
         // System.out.println("==============================================");
         // testSetStartPlaceMethod(map);
         // System.out.print("Current places stored in the map: ");
-        
+        Place rundle = new PlaceImpl("Rundle", 11, 22);
+        map.setEndPlace(rundle);
+        System.out.println("Start place:" + map.getStartPlace());
+        System.out.println("End place: " + map.getEndPlace());
 
+        int totalDistance = map.getTripDistance();
+        System.out.println("Total distance of the trip: " + totalDistance);
+
+        
+        // ArrayList<Place> tempPlaces = new ArrayList<>(map.getPlaces());
+        // String str1 = "Adelaide";
+        // String str2 = "Ade";
+        // System.out.println(str1.compareTo(str2));
+        // System.out.println(tempPlaces.indexOf(new PlaceImpl("Ade",12, 10)));
+        // System.out.println(tempPlaces.indexOf(new PlaceImpl("Arndale",93, 21)));
 
         // System.out.println(map);
 
@@ -394,6 +407,19 @@ public class MapImplTest {
         }
         printResult(!result);
 
+        System.out.println("Deleting road: Adelaide 12 10, Arndale 93 21, [empty], 32");
+        numberOfTestCases += 1;
+        p1 = new PlaceImpl("Adelaide", 12, 10);
+        p2 = new PlaceImpl("Arndale", 93, 21);
+        road = new RoadImpl(p1, p2, "", 32);
+        mp.deleteRoad(road);
+        System.out.print("Checking if road has been successfully removed...");
+        result = checkRoadExistInSet(mp.getRoads(), road);
+        if (!result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(!result);
+
         System.out.println("Deleting road: Adelaide 12 10, Arndale 93 21, Piccolo, 38");
         numberOfTestCases += 1;
         p1 = new PlaceImpl("Adelaide", 12, 10);
@@ -426,6 +452,16 @@ public class MapImplTest {
         numberOfTestCases += 1;
         p = setStartPlace(mp, null);
         System.out.print("Checking if start place has been unset...");
+        result = isEqualPlace(p, mp.getStartPlace());
+        if (result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(result);
+
+        System.out.println("Setting start place: Adelaide 12 10");
+        numberOfTestCases += 1;
+        p = setStartPlace(mp, new PlaceImpl("Adelaide", 12, 10));
+        System.out.print("Checking if start place has been set...");
         result = isEqualPlace(p, mp.getStartPlace());
         if (result) {
             numberOfTestCasesPassed += 1;

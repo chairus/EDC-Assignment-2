@@ -386,11 +386,23 @@ public class MapImpl implements Map {
 
     private int computeTotalDistance() {
         int totalDistance = -1;
+        List<ArrayList<Place>> setOfPlaces = new ArrayList<ArrayList<Place>>();
+        for (Place p: this.places) {    // Initialize each place to belong to it's own set
+            ArrayList<Place> tempList = new ArrayList<>();
+            tempList.add(p);
+            setOfPlaces.add(tempList); 
+        }
+        
+        List<Road> setOfRoads = new ArrayList<>(); // The roads that belong to the MST
         List<Road> sortedRoads = new ArrayList<>(this.roads);
-        HashMap setOfPlacesAndMST;
         Collections.sort(sortedRoads, SortByLength);
 
-        setOfPlacesAndMST = MST(sortedRoads);        
+        MST(sortedRoads, setOfPlaces, setOfRoads);        
+
+        if (setOfPlaces.get(0).contains(this.startPlace) &&
+            setOfPlaces.get(0).contains(this.endPlace)) {
+            totalDistance = findAndCalculateTrip(setOfRoads);
+        }
 
         return totalDistance;
     }
@@ -402,25 +414,17 @@ public class MapImpl implements Map {
      * is a partition in the graph) and the second list is the set of roads that belong to the 
      * MST set.
      */
-    private HashMap MST(List<Road> sRoads) {
-        List<ArrayList<Place>> setOfPlaces = new ArrayList<ArrayList<Place>>(); // Initialize each place to belong to it's own set
-        List<Road> setOfRoads = new ArrayList<>(); // The roads that belong to the MST
-        HashMap MSTsetExist = new HashMap<>();
+    private void MST(List<Road> sRoads, List<ArrayList<Place>> setOfPlaces, List<Road> setOfRoads) {
         int numberOfPlaces = this.places.size();
 
         for (Road r: sRoads) {
             findSetAndMergePlace(r, setOfPlaces, setOfRoads);
-            if (setOfRoads.size() == numberOfPlaces - 1) {
-                break;
-            }
+            // if (setOfRoads.size() == numberOfPlaces - 1) {
+            //     break;
+            // }
         }
 
-        if (setOfPlaces.get(0).contains(this.startPlace) && 
-            setOfPlaces.get(0).contains(this.endPlace)) {
-            MSTsetExist.put(setOfRoads, false);
-        }
-            
-        return MSTsetExist;
+        System.out.println("MST roads: " + setOfRoads);
     }
 
     /**
@@ -435,14 +439,16 @@ public class MapImpl implements Map {
         Place p2 = r.secondPlace();
         boolean foundSetForP1 = false;
         boolean foundSetForP2 = false;
-
+        System.out.println("SetofPlaces: " + sp);
         while (k < sp.size()) {
-            if (sp.get(i).contains(p1)) {
+            if (sp.get(k).contains(p1) && !foundSetForP1) {
+                System.out.println(sp.get(k));
                 i = k;
                 foundSetForP1 = true;
             }
 
-            if (sp.get(j).contains(p2)) {
+            if (sp.get(k).contains(p2) && !foundSetForP2) {
+                System.out.println(sp.get(k));
                 j = k;
                 foundSetForP2 = true;
             }
@@ -453,16 +459,26 @@ public class MapImpl implements Map {
             k++;
         }
 
+        System.out.println("FirstPlace: " + p1);
+        System.out.println("SecondPlace: " + p2);
+        System.out.println("i: " + i + " j: " + j);
+
         ArrayList<Place> newSet;
         // Merge two sets s1 and s2, if they belong to different sets and add the road to the 
         // MST set.
         if (i != j) {
             newSet = sp.get(i);
             newSet.addAll(sp.get(j));
-            sp.remove(j);
             sp.set(i, newSet);
+            sp.remove(j);
             sr.add(r);
         }
+    }
+
+    public int findAndCalculateTrip(List<Road> MSTroad) {
+        int totalTrip = 0;
+
+        return totalTrip;
     }
 
     /**
