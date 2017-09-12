@@ -1,54 +1,54 @@
-PLACE Adelaide(200,200)
-PLACE Ararat(0,0)
-PLACE Hamilton(200,200)
-PLACE Avoca(0,0)
-PLACE Ballarat(0,0)
-PLACE Bordertown(150,250)
-PLACE StArnaud(400,400)
-PLACE Colac(0,0)
-PLACE Geelong(100,100)
-PLACE Kingston(200,200)
-PLACE Horsham(0,0)
-PLACE Keith(0,0)
-PLACE Melbourne(100,100)
-PLACE Morwell(100,100)
-PLACE Yarram(0,0)
-PLACE MtGambier(100,100)
-PLACE Warnambool(100,100)
-PLACE Ouyen(0,0)
-PLACE Pinarroo(0,0)
-PLACE Portland(0,0)
-PLACE Sale(250,250)
-PLACE TailemBend(0,0)
-ROAD Ballarat(Western8:113)Melbourne
-ROAD Colac(Princes1:74)Geelong
-ROAD Geelong(Princes1:74)Melbourne
-ROAD Hamilton(Henty:130)Horsham
-ROAD Ballarat(Glenelg:184)Hamilton
-ROAD Geelong(Hamilton:226)Hamilton
-ROAD Colac(Princes1:126)Warnambool
-ROAD Ouyen(Ouyen:137)Pinarroo
-ROAD Ouyen(Ouyen:222)StArnaud
-ROAD Pinarroo(:146)TailemBend
-ROAD Portland(Princes1:100)Warnambool
-ROAD Bordertown(Western8:157)Horsham
-ROAD Horsham(Wimmera:109)StArnaud
-ROAD Adelaide(Princes1:107)TailemBend
-ROAD Bordertown(Western8:45)Keith
-ROAD Ararat(Pyrenees:63)Avoca
-ROAD Ararat(Western8:95)Horsham
-ROAD Ararat(Western8:92)Ballarat
-ROAD Avoca(Sunrasia:63)StArnaud
-ROAD Avoca(Sunrasia:71)Ballarat
-ROAD Keith(Riddoch:213)MtGambier
-ROAD Kingston(Princes1:199)TailemBend
-ROAD Kingston(Princes1:157)MtGambier
-ROAD Melbourne(Princes1:116)Morwell
-ROAD Morwell(Princes1:63)Sale
-ROAD MtGambier(Princes1:115)Portland
-ROAD Sale(Gippsland:72)Yarram
-ROAD Melbourne(Gippsland:215)Yarram
-ROAD Keith(Western8:137)TailemBend
-START Melbourne
-END Adelaide
+place Adelaide 200 200
+place Ararat 0 0
+place Hamilton 200 200
+place Avoca 0 0
+place Ballarat 0 0
+place Bordertown 150 250
+place StArnaud 400 400
+place Colac 0 0
+place Geelong 100 100
+place Kingston 200 200
+place Horsham 0 0
+place Keith 0 0
+place Melbourne 100 100
+place Morwell 100 100
+place Yarram 0 0
+place MtGambier 100 100
+place Warnambool 100 100
+place Ouyen 0 0
+place Pinarroo 0 0
+place Portland 0 0
+place Sale 250 250
+place TailemBend 0 0
 
+road Colac Princes1 74 Geelong
+road Geelong Princes1 74 Melbourne
+road Hamilton Henty 130 Horsham
+road Ballarat Glenelg 184 Hamilton
+road Geelong Hamilton 226 Hamilton
+road Colac Princes1 126 Warnambool
+road Ouyen Ouyen 137 Pinarroo
+road Ouyen Ouyen 222 StArnaud
+road Pinarroo  146 TailemBend
+road Portland Princes1 100 Warnambool
+road Horsham Wimmera 109 StArnaud
+road Ararat Western8 92 Ballarat
+road Avoca Sunrasia 63 StArnaud
+road Keith Riddoch 213 MtGambier
+road Kingston Princes1 199 TailemBend
+road Kingston Princes1 157 MtGambier
+road Melbourne Princes1 116 Morwell
+road Morwell Princes1 63 Sale
+road MtGambier Princes1 115 Portland
+road Sale Gippsland 72 Yarram
+road Melbourne Gippsland 215 Yarram
+road Ballarat Western8 113 Melbourne
+road Avoca Sunrasia 71 Ballarat
+road Ararat Pyrenees 63 Avoca
+road Ararat Western8 95 Horsham
+road Bordertown Western8 157 Horsham
+road Bordertown Western8 45 Keith
+road Keith Western8 137 TailemBend
+road Adelaide Princes1 107 TailemBend
+start Melbourne
+end Adelaide

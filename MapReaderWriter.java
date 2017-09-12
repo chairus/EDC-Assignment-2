@@ -6,9 +6,11 @@
 package com.classes;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.io.IOException;
+import java.util.Set;
 
 public class MapReaderWriter implements MapIo {
     // Constructor
@@ -51,7 +53,63 @@ public class MapReaderWriter implements MapIo {
   
     //Write a representation of the Map, m, to the Writer w.
     public void write(Writer w, Map m) throws IOException {
-        
+        BufferedWriter buffWriter = new BufferedWriter(w);
+        Set<Place> places = m.getPlaces();
+        Set<Road> roads = m.getRoads();
+
+        for (Place p: places) {
+            writePlace(p, buffWriter);
+        }
+
+        buffWriter.newLine();
+        buffWriter.flush();
+
+        for (Road r: roads) {
+            writeRoad(r, buffWriter);
+        }
+
+        if (m.getStartPlace() != null) {
+            writeStartOrEndPlace("start ", m.getStartPlace(), buffWriter);
+        }
+
+        if (m.getEndPlace() != null) {
+            writeStartOrEndPlace("end ", m.getEndPlace(), buffWriter);
+        }
+    }
+
+    private void writeStartOrEndPlace(String keyword, Place p, BufferedWriter bfw) throws IOException {
+        String line = keyword + p.getName();
+        bfw.write(line);
+        bfw.newLine();
+        bfw.flush();
+    }
+
+    private void writePlace(Place p, BufferedWriter bfw) throws IOException {
+        String line = "place " + 
+                      p.getName() +
+                      " " +
+                      String.valueOf(p.getX()) +
+                      " " +
+                      String.valueOf(p.getY());
+
+        bfw.write(line);
+        bfw.newLine();
+        bfw.flush();
+    }
+
+    private void writeRoad(Road r, BufferedWriter bfw) throws IOException {
+        String line = "road " + 
+                      r.firstPlace().getName() +
+                      " " +
+                      r.roadName() +
+                      " " + 
+                      String.valueOf(r.length()) +
+                      " " +
+                      r.secondPlace().getName();
+
+        bfw.write(line);
+        bfw.newLine();
+        bfw.flush();
     }
 
     private void addPlace(String[] str, Map mp, int lineNr) throws MapFormatException {

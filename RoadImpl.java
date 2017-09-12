@@ -110,15 +110,15 @@ public class RoadImpl implements Road {
         return true;
     }
 
-    private boolean placesAreEqual(Place p1, Place p2) {
-        if (p1.getName().compareTo(p2.getName()) != 0 ||
-            p1.getX() != p2.getX() ||
-            p1.getY() != p2.getY()) {
-            return false;
-        }
+    // private boolean placesAreEqual(Place p1, Place p2) {
+    //     if (p1.getName().compareTo(p2.getName()) != 0 ||
+    //         p1.getX() != p2.getX() ||
+    //         p1.getY() != p2.getY()) {
+    //         return false;
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     @Override
     public int hashCode() {
