@@ -1,7 +1,6 @@
 package com.classes;
 
-public class MapFormatException extends Exception
-{
+public class MapFormatException extends Exception {
     private int lineNr;
     
     public MapFormatException(int lineNr, String msg) {

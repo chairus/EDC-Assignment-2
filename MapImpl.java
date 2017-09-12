@@ -516,27 +516,37 @@ public class MapImpl implements Map {
         List<Place> currentPlaces = new ArrayList<>();  // Current places being explored
 
         currentPlaces.add(startPlace);
+        // System.out.println("Current places: " + currentPlaces);
         while (!unexploredRoads.isEmpty()) {
             road = findRoadWithPlace(unexploredRoads, currentPlaces.get(currentPlaces.size() - 1));
+            // System.out.println("Found road: " + road);
             if (road != null) {
                 unexploredRoads.remove(road);
                 currentRoads.add(road);
+                // System.out.println("Unexplored roads: " + unexploredRoads);
                 // Check if one end of the found road is the end place
                 if (road.firstPlace().equals(endPlace) || road.secondPlace().equals(endPlace)) {
                     break;
                 } else {
-                    // Add the other end of the found road into the end of the current places being explored
-                    if (road.firstPlace().equals(currentPlaces.get(currentPlaces.size() - 1))) {
-                        currentPlaces.add(road.secondPlace());
-                    } else {
-                        currentPlaces.add(road.firstPlace());
-                    }
+                    // if (!currentPlaces.contains(road.firstPlace()) || !currentPlaces.contains(road.secondPlace())) {
+                        // Add the other end of the found road into the end of the current places being explored
+                        if (road.firstPlace().equals(currentPlaces.get(currentPlaces.size() - 1))) {
+                            currentPlaces.add(road.secondPlace());
+                        } else {
+                            currentPlaces.add(road.firstPlace());
+                        }
+                    // }
                 }
             } else {   // We have reached the end of the road. There are no more roads that leads to a place
                 currentPlaces.remove(currentPlaces.size() - 1);
                 exploredRoads.add(currentRoads.remove(currentRoads.size() - 1));
             }
+            // System.out.println("Current roads: " + currentRoads);
+            // System.out.println("Current places: " + currentPlaces);
         }
+        // System.out.println("Exited while loop.");
+        // System.out.println("Current places: " + currentPlaces);
+        // System.out.println("Current roads: " + currentRoads);
 
         for (Road r: currentRoads) {
             RoadImpl rImpl = (RoadImpl)r;

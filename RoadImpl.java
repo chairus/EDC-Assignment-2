@@ -93,8 +93,17 @@ public class RoadImpl implements Road {
     private boolean equalsHelper(Object r) {
         RoadImpl rd = (RoadImpl)r;
 
+        // if (rd.roadName().compareTo(this.roadName) != 0 ||
+        //     placesAreEqual(rd.firstPlace(), this.firstPlace) ||
+        //     placesAreEqual(rd.secondPlace(), this.secondPlace) ||
+        //     rd.length() != this.length) {
+        //     return false;
+        // }
+
         if (rd.roadName().compareTo(this.roadName) != 0 ||
-            placesAreEqual(rd.firstPlace(), rd.secondPlace())) {
+            !rd.firstPlace().equals(this.firstPlace) ||
+            !rd.secondPlace().equals(this.secondPlace) ||
+            rd.length() != this.length) {
             return false;
         }
 
