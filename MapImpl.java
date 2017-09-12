@@ -7,8 +7,14 @@
 package com.classes;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+
 import java.util.LinkedHashSet;
 
 public class MapImpl implements Map {
@@ -224,7 +230,6 @@ public class MapImpl implements Map {
         
         // Compute total distance of the trip
         totalDistance = computeTotalDistance();
-
         return totalDistance;
     }
 
@@ -382,12 +387,90 @@ public class MapImpl implements Map {
 
     private int computeTotalDistance() {
         int totalDistance = -1;
+        List<Road> sortedRoads = new ArrayList<>(this.roads);
+        List<List<T>> setOfPlacesAndMST;
+        Collections.sort(sortedRoads, SortByLength);
 
-        
+        setOfPlacesAndMST = MST(sortedRoads);        
+
         return totalDistance;
     }
 
-    /* ========== DEBUGGIN PURPOSES ========== */
+    /**
+     * This method is an implementation of Kruskal's algorithm in finding the MST of a bidirected
+     * graph. It returns a list of lists where the the first list is also a list of lists where
+     * each list is a set of places(there could possibly be more than two sets of places if there
+     * is a partition in the graph) and the second list is the set of roads that belong to the 
+     * MST set.
+     */
+    private Map<List<Road>, Boolean> MST(List<Road> sRoads) {
+        List<List<Place>> setOfPlaces = new ArrayList<>(new ArrayList<>(this.places)); // Initialize each place to belong to it's own set
+        List<Road> setOfRoads = new ArrayList<>(); // The roads that belong to the MST
+        Map<List<Road>, Boolean> MSTset = new HashMap<>();
+        int numberOfPlaces = this.places.size();
+
+        for (Road r: sRoads) {
+            findSetAndMergePlace(r, setOfPlaces, setOfRoads);
+            if (setOfRoads.size() == numberOfPlaces - 1) {
+                break;
+            }
+        }
+
+        
+        return listsOfPlacesAndRoads;
+    }
+
+    /**
+     * This method merges the two set that the two places belong to if they belong to different
+     * sets and returns true else false.
+     */
+    private boolean findSetAndMergePlace(Road r, List<List<Place>> sp, List<Road> sr) {
+        // i is the index of the set where p1 belongs to and j is the index of the set where p2
+        // belongs to in set s, and k is just a counter
+        int i = 0, j = 0, k = 0;
+        Place p1 = r.firstPlace();
+        Place p2 = r.secondPlace();
+        boolean foundSetForP1 = false;
+        boolean foundSetForP2 = false;
+
+        while (k < sp.size()) {
+            if (sp.get(i).contains(p1)) {
+                i = k;
+                foundSetForP1 = true;
+            }
+
+            if (sp.get(j).contains(p2)) {
+                j = k;
+                foundSetForP2 = true;
+            }
+
+            if (foundSetForP1 && foundSetForP2) {
+                break;
+            }
+            k++;
+        }
+
+        List<Place> newSet;
+        // Merge two sets s1 and s2, if they belong to different sets and add the road to the 
+        // MST set.
+        if (i != j) {
+            newSet = sp.get(i).addAll(sp.get(j));
+            sp.remove(j);
+            sp.set(i, newSet);
+            sr.add(r);
+        }
+    }
+
+    /**
+     * This is used to sort the roads by their length in ascending order.
+     */
+    private Comparator<Road> SortByLength  = new Comparator<Road>() {
+        public int compare(Road a, Road b) {
+            return a.length() - b.length();
+        }
+    };
+
+    /* ========== DEBUGGING PURPOSES ========== */
     public void printPlaces() {
         System.out.println(this.places);
     }

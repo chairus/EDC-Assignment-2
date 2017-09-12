@@ -3,10 +3,10 @@ package com.classes;
 import java.util.Objects;
 
 public class RoadImpl implements Road {
-    Place firstPlace, secondPlace;
-    String roadName;
-    int length; // kilometres
-    boolean isChosen;
+    private Place firstPlace, secondPlace;
+    private String roadName;
+    private int length; // kilometres
+    private boolean isChosen;
 
     public RoadImpl(Place place1, Place place2, String roadName, int length) {
         storePlaces(place1, place2);
@@ -46,6 +46,10 @@ public class RoadImpl implements Road {
     //Return true if this road is chosen as part of the current trip
     public boolean isChosen() {
         return this.isChosen;
+    }
+
+    public void setIsChosen(boolean val) {
+        isChosen = val;
     }
 
 

@@ -6,7 +6,11 @@
 
 package com.classes;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 public class MapImplTest {
     static int numberOfTestCases = 0;
@@ -80,12 +84,21 @@ public class MapImplTest {
         // System.out.println("==============================================");
         // testSetStartPlaceMethod(map);
         // System.out.print("Current places stored in the map: ");
+        List<Road> sortedRoads = new ArrayList<Road>(map.getRoads());
+        Collections.sort(sortedRoads, SortByLength);
+        System.out.println(sortedRoads);
 
 
         System.out.println(map);
 
         printTestCasesResult(numberOfTestCases, numberOfTestCasesPassed);
     }
+
+    public static Comparator<Road> SortByLength = new Comparator<Road>() {
+        public int compare(Road a, Road b) {
+            return a.length() - b.length();
+        }
+    };
 
     private static void testNewPlaceMethod(Map map) {
         Place place;
@@ -180,43 +193,43 @@ public class MapImplTest {
         Place p1,p2;
         boolean result;
 
-        System.out.println("Adding a valid road: Adelaide 12 10, Arndale 93 21, LeHunte, 50");
+        System.out.println("Adding a valid road: Adelaide 12 10, Arndale 93 21, LeHunte, 17");
         numberOfTestCases += 1;
         p1 = new PlaceImpl("Adelaide", 12, 10);
         p2 = new PlaceImpl("Arndale", 93, 21);
-        road = addRoad(mp, p1, p2, "LeHunte", 50);
+        road = addRoad(mp, p1, p2, "LeHunte", 17);
         System.out.print("Checking if road has been successfully added...");
-        result = isEqualRoad(road, new RoadImpl(p1, p2, "LeHunte", 50));
+        result = isEqualRoad(road, new RoadImpl(p1, p2, "LeHunte", 17));
         if (result) {
             numberOfTestCasesPassed += 1;
         }
         printResult(result);
 
-        System.out.println("Adding a valid road: Adelaide 12 10, Arndale 93 21, [empty string], 50");
+        System.out.println("Adding a valid road: Adelaide 12 10, Arndale 93 21, [empty string], 32");
         numberOfTestCases += 1;
-        road = addRoad(mp, p1, p2, "", 50);
+        road = addRoad(mp, p1, p2, "", 32);
         System.out.print("Checking if road has been successfully added...");
-        result = isEqualRoad(road, new RoadImpl(p1, p2, "", 50));
+        result = isEqualRoad(road, new RoadImpl(p1, p2, "", 32));
         if (result) {
             numberOfTestCasesPassed += 1;
         }
         printResult(result);
 
-        System.out.println("Adding a valid road: Adelaide 12 10, Arndale 93 21, LeHunte32lm, 50");
+        System.out.println("Adding a valid road: Adelaide 12 10, Arndale 93 21, LeHunte32lm, 21");
         numberOfTestCases += 1;
-        road = addRoad(mp, p1, p2, "LeHunte32lm", 50);
+        road = addRoad(mp, p1, p2, "LeHunte32lm", 21);
         System.out.print("Checking if road has been successfully added...");
-        result = isEqualRoad(road, new RoadImpl(p1, p2, "LeHunte32lm", 50));
+        result = isEqualRoad(road, new RoadImpl(p1, p2, "LeHunte32lm", 21));
         if (result) {
             numberOfTestCasesPassed += 1;
         }
         printResult(result);
 
-        System.out.println("Adding a valid road: Adelaide 12 10, Arndale 93 21, a, 50");
+        System.out.println("Adding a valid road: Adelaide 12 10, Arndale 93 21, a, 10");
         numberOfTestCases += 1;
-        road = addRoad(mp, p1, p2, "a", 50);
+        road = addRoad(mp, p1, p2, "a", 10);
         System.out.print("Checking if road has been successfully added...");
-        result = isEqualRoad(road, new RoadImpl(p1, p2, "a", 50));
+        result = isEqualRoad(road, new RoadImpl(p1, p2, "a", 10));
         if (result) {
             numberOfTestCasesPassed += 1;
         }
@@ -282,11 +295,11 @@ public class MapImplTest {
         boolean result;
         Set<Road> set = mp.getRoads();
 
-        System.out.println("Deleting road: Adelaide 12 10, Arndale 93 21, LeHunte, 50");
+        System.out.println("Deleting road: Adelaide 12 10, Arndale 93 21, LeHunte, 17");
         numberOfTestCases += 1;
         p1 = new PlaceImpl("Adelaide", 12, 10);
         p2 = new PlaceImpl("Arndale", 93, 21);
-        road = new RoadImpl(p1, p2, "LeHunte", 50);
+        road = new RoadImpl(p1, p2, "LeHunte", 17);
         mp.deleteRoad(road);
         System.out.print("Checking if road has been successfully removed...");
         result = checkRoadExistInSet(mp.getRoads(), road);
