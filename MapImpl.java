@@ -167,7 +167,7 @@ public class MapImpl implements Map {
         }
 
         this.startPlace = p;
-        ((PlaceImpl)p).setStartPlace(true);
+        ((PlaceImpl)pl).setStartPlace(true);
         
     }
 
@@ -200,7 +200,7 @@ public class MapImpl implements Map {
         }
 
         this.endPlace = p;
-        ((PlaceImpl)p).setEndPlace(true);
+        ((PlaceImpl)pl).setEndPlace(true);
     }
 
 
