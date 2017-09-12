@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -388,7 +387,7 @@ public class MapImpl implements Map {
     private int computeTotalDistance() {
         int totalDistance = -1;
         List<Road> sortedRoads = new ArrayList<>(this.roads);
-        List<List<T>> setOfPlacesAndMST;
+        HashMap setOfPlacesAndMST;
         Collections.sort(sortedRoads, SortByLength);
 
         setOfPlacesAndMST = MST(sortedRoads);        
@@ -403,10 +402,10 @@ public class MapImpl implements Map {
      * is a partition in the graph) and the second list is the set of roads that belong to the 
      * MST set.
      */
-    private Map<List<Road>, Boolean> MST(List<Road> sRoads) {
-        List<List<Place>> setOfPlaces = new ArrayList<>(new ArrayList<>(this.places)); // Initialize each place to belong to it's own set
+    private HashMap MST(List<Road> sRoads) {
+        List<ArrayList<Place>> setOfPlaces = new ArrayList<ArrayList<Place>>(); // Initialize each place to belong to it's own set
         List<Road> setOfRoads = new ArrayList<>(); // The roads that belong to the MST
-        Map<List<Road>, Boolean> MSTset = new HashMap<>();
+        HashMap MSTsetExist = new HashMap<>();
         int numberOfPlaces = this.places.size();
 
         for (Road r: sRoads) {
@@ -416,15 +415,19 @@ public class MapImpl implements Map {
             }
         }
 
-        
-        return listsOfPlacesAndRoads;
+        if (setOfPlaces.get(0).contains(this.startPlace) && 
+            setOfPlaces.get(0).contains(this.endPlace)) {
+            MSTsetExist.put(setOfRoads, false);
+        }
+            
+        return MSTsetExist;
     }
 
     /**
      * This method merges the two set that the two places belong to if they belong to different
      * sets and returns true else false.
      */
-    private boolean findSetAndMergePlace(Road r, List<List<Place>> sp, List<Road> sr) {
+    private void findSetAndMergePlace(Road r, List<ArrayList<Place>> sp, List<Road> sr) {
         // i is the index of the set where p1 belongs to and j is the index of the set where p2
         // belongs to in set s, and k is just a counter
         int i = 0, j = 0, k = 0;
@@ -450,11 +453,12 @@ public class MapImpl implements Map {
             k++;
         }
 
-        List<Place> newSet;
+        ArrayList<Place> newSet;
         // Merge two sets s1 and s2, if they belong to different sets and add the road to the 
         // MST set.
         if (i != j) {
-            newSet = sp.get(i).addAll(sp.get(j));
+            newSet = sp.get(i);
+            newSet.addAll(sp.get(j));
             sp.remove(j);
             sp.set(i, newSet);
             sr.add(r);
