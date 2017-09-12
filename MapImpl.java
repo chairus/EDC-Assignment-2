@@ -413,12 +413,10 @@ public class MapImpl implements Map {
         Collections.sort(sortedRoads, SortByLength);
 
         MST(sortedRoads, setOfPlaces, setOfRoads);        
-        Road startingRoad;
-        startingRoad = findRoadWithPlace(setOfRoads, startPlace);
 
         if (setOfPlaces.get(0).contains(this.startPlace) &&
             setOfPlaces.get(0).contains(this.endPlace)) {
-            totalDistance = findAndCalculateTrip(setOfRoads, startingRoad);
+            totalDistance = findAndCalculateTrip(setOfRoads);
         }
 
         return totalDistance;
@@ -502,8 +500,8 @@ public class MapImpl implements Map {
      * @param MSTroad - These are the roads that are in the minimum spanning tree set
      * @return int - The total distance of the trip
      */
-    public int findAndCalculateTrip(List<Road> MSTroad, Road startingRoad) {
-        int totalTrip = 0, i = 0;
+    public int findAndCalculateTrip(List<Road> MSTroad) {
+        int totalTrip = 0;
         Road road;
         List<Road> exploredRoads = new ArrayList<>();
         List<Road> unexploredRoads = new ArrayList<>(MSTroad);
@@ -511,12 +509,11 @@ public class MapImpl implements Map {
         List<Place> currentPlaces = new ArrayList<>();  // Current places being explored
 
         currentPlaces.add(startPlace);
-        while (i < unexploredRoads.size()) {
+        while (!unexploredRoads.isEmpty()) {
             road = findRoadWithPlace(unexploredRoads, currentPlaces.get(currentPlaces.size() - 1));
             if (road != null) {
                 unexploredRoads.remove(road);
                 currentRoads.add(road);
-                i -= 1;
                 // Check if one end of the found road is the end place
                 if (road.firstPlace().equals(endPlace) || road.secondPlace().equals(endPlace)) {
                     break;
@@ -532,7 +529,6 @@ public class MapImpl implements Map {
                 currentPlaces.remove(currentPlaces.size() - 1);
                 exploredRoads.add(currentRoads.remove(currentRoads.size() - 1));
             }
-            i += 1;
         }
 
         for (Road r: currentRoads) {
@@ -542,7 +538,6 @@ public class MapImpl implements Map {
             this.roads.remove(r);
             this.roads.add(rImpl);
         }
-
 
         return totalTrip;
     }
