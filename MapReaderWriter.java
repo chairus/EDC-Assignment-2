@@ -114,7 +114,7 @@ public class MapReaderWriter implements MapIo {
 
     private void addPlace(String[] str, Map mp, int lineNr) throws MapFormatException {
         try {
-            mp.newPlace(str[1], Integer.parseInt(str[2]), Integer.parseInt(str[3]));    
+            mp.newPlace(str[1], Integer.parseInt(str[2]), Integer.parseInt(str[3]));  
         } catch (IllegalArgumentException e) {
             throw new MapFormatException(lineNr, e.getMessage());
         }
@@ -122,6 +122,7 @@ public class MapReaderWriter implements MapIo {
     }
 
     private void addRoad(String[] str, Map mp, int lineNr) throws MapFormatException{
+        int len = 0;
         String roadName = str[2];
         if (roadName.compareToIgnoreCase("-") == 0) {
             roadName = "";
@@ -130,6 +131,9 @@ public class MapReaderWriter implements MapIo {
         Place to = mp.findPlace(str[4]);
         try {
             if (from == null || to == null) {
+                throw new IllegalArgumentException();
+            }
+            if ((len = Integer.parseInt(str[3])) < 0) {
                 throw new IllegalArgumentException();
             }
             mp.newRoad(from, to, roadName, Integer.parseInt(str[3]));    
