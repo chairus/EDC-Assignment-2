@@ -90,7 +90,7 @@ public class MapImplTest {
         Place arndale = new PlaceImpl("Arndale", 93, 21);
         Place a_ = new PlaceImpl("A_", 23, 92);
 
-        map.setEndPlace(botanic);
+        map.setEndPlace(cleland);
         System.out.println("Start place:" + map.getStartPlace());
         System.out.println("End place: " + map.getEndPlace());
 
@@ -137,15 +137,15 @@ public class MapImplTest {
         }
         printResult(result);
 
-        // System.out.println("Adding a valid place: Cleland 90 101");
-        // numberOfTestCases += 1;
-        // place = addPlace(map, "Cleland", 90, 101);
-        // System.out.print("Checking if place has been successfully added...");
-        // result = isEqualPlace(place, new PlaceImpl("Cleland", 90, 101));
-        // if (result) {
-        //     numberOfTestCasesPassed += 1;
-        // }
-        // printResult(result);
+        System.out.println("Adding a valid place: Cleland 90 101");
+        numberOfTestCases += 1;
+        place = addPlace(map, "Cleland", 90, 101);
+        System.out.print("Checking if place has been successfully added...");
+        result = isEqualPlace(place, new PlaceImpl("Cleland", 90, 101));
+        if (result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(result);
 
         System.out.println("Adding a valid place: Arndale 93 21");
         numberOfTestCases += 1;
@@ -396,6 +396,18 @@ public class MapImplTest {
         road = addRoad(mp, p1, p2, "RoadToBotanic", 20);
         System.out.print("Checking if road has been successfully added...");
         result = isEqualRoad(road, new RoadImpl(p1, p2, "RoadToBotanic", 20));
+        if (result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(result);
+
+        System.out.println("Adding a valid road: Arndale 93 21, Cleland 90 101, RoadToCleland, 10");
+        numberOfTestCases += 1;
+        p1 = new PlaceImpl("Arndale", 93, 21);
+        p2 = new PlaceImpl("Cleland", 90, 101);
+        road = addRoad(mp, p1, p2, "RoadToCleland", 10);
+        System.out.print("Checking if road has been successfully added...");
+        result = isEqualRoad(road, new RoadImpl(p1, p2, "RoadToCleland", 10));
         if (result) {
             numberOfTestCasesPassed += 1;
         }
