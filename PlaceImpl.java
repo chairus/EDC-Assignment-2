@@ -6,6 +6,8 @@
 
 package com.classes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -14,24 +16,28 @@ public class PlaceImpl implements Place {
     Set<Road> incomingRoads;    // contains all roads that reach this place
     String placeName;   // contains the name of the place
     int xPos, yPos; // contains the x and y coordinate of the place
+    List<PlaceListener> placeListeners;
+    boolean isStart, isEnd;
 
     // Constructor
     public PlaceImpl(String placeName, int xPos, int yPos) {
         this.placeName = placeName;
         this.xPos = xPos;
         this.yPos = yPos;
+        this.placeListeners = new ArrayList<>();
+        this.isStart = this.isEnd = false;
     }
 
     //Add the PlaceListener pl to this place. 
     //Note: A place can have multiple listeners
     public void addListener(PlaceListener pl) {
-
+        placeListeners.add(pl);
     }
 
 
     //Delete the PlaceListener pl from this place.
     public void deleteListener(PlaceListener pl) {
-
+        placeListeners.remove(pl);
     }
 
 
@@ -77,16 +83,24 @@ public class PlaceImpl implements Place {
         return yPos;
     }
 
+    public void setStartPlace(boolean val) {
+        isStart = val;
+    }
+
+    public void setEndPlace(boolean val) {
+        isEnd = val;
+    }
+
 
     //Return true if this place is the starting place for a trip
     public boolean isStartPlace() {
-        return false;
+        return isStart;
     }
 
 
     //Return true if this place is the ending place for a trip
     public boolean isEndPlace() {
-        return false;
+        return isEnd;
     }
 
 
