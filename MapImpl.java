@@ -322,6 +322,12 @@ public class MapImpl implements Map {
         return true;
     }
 
+    /**
+     * This method checks two roads if they are equal.
+     * @param r1 - The first road
+     * @param r2 - The second road
+     * @return boolean - True if the arguments are equal, False otherwise
+     */
     private boolean isEqualRoad(Road r1, Road r2) {
         if (r1 == r2) {
             return true;
@@ -352,6 +358,8 @@ public class MapImpl implements Map {
 
     /**
      * Checks if the given place name satisfies the requirements set out in the specification.
+     * @param placeName - The name of the place
+     * @return boolean - True if the name of the place is valid, False otherwise
      */
     private boolean checkPlaceName(String placeName) {
         if (placeName.compareTo(new String("")) == 0) {  // check if the placeName is empty
@@ -370,6 +378,8 @@ public class MapImpl implements Map {
 
     /**
      * Checks if the given road name satisfies the requirements set out in the specification.
+     * @param roadName - The name of the road
+     * @return boolean - True if the name of the road is valid, False otherwise
      */
     private boolean checkRoadName(String roadName) {
         String regex = "([a-zA-Z]([a-zA-Z]|\\d)*)";
@@ -438,9 +448,6 @@ public class MapImpl implements Map {
 
         for (Road r: sortedRoads) {
             findSetAndMergePlace(r, setOfPlaces, setOfRoads);
-            // if (setOfRoads.size() == numberOfPlaces - 1) {
-            //     break;
-            // }
         }
 
         System.out.println("MST roads: " + setOfRoads);
@@ -459,16 +466,14 @@ public class MapImpl implements Map {
         Place p2 = r.secondPlace();
         boolean foundSetForP1 = false;
         boolean foundSetForP2 = false;
-        // System.out.println("SetofPlaces: " + sp);
+        
         while (k < sp.size()) {
             if (sp.get(k).contains(p1) && !foundSetForP1) {
-                System.out.println(sp.get(k));
                 i = k;
                 foundSetForP1 = true;
             }
 
             if (sp.get(k).contains(p2) && !foundSetForP2) {
-                System.out.println(sp.get(k));
                 j = k;
                 foundSetForP2 = true;
             }
@@ -478,10 +483,6 @@ public class MapImpl implements Map {
             }
             k++;
         }
-
-        // System.out.println("FirstPlace: " + p1);
-        // System.out.println("SecondPlace: " + p2);
-        // System.out.println("i: " + i + " j: " + j);
 
         ArrayList<Place> newSet;
         // Merge two sets s1 and s2, if they belong to different sets and add the road to the 

@@ -91,6 +91,9 @@ public class MapImplTest {
 
         int totalDistance = map.getTripDistance();
         System.out.println("Total distance of the trip: " + totalDistance);
+        for (Road r: map.getRoads()) {
+            System.out.println(r.roadName() + " isChosen: " + r.isChosen());
+        }
 
         
         // ArrayList<Place> tempPlaces = new ArrayList<>(map.getPlaces());
