@@ -6,12 +6,13 @@ public class RoadImpl implements Road {
     private Place firstPlace, secondPlace;
     private String roadName;
     private int length; // kilometres
-    private boolean isChosen;
+    public boolean isChosen;
 
     public RoadImpl(Place place1, Place place2, String roadName, int length) {
         storePlaces(place1, place2);
         this.roadName = roadName;
         this.length = length;
+        this.isChosen = false;
     }
 
     //Add the RoadListener rl to this place.
@@ -46,10 +47,6 @@ public class RoadImpl implements Road {
     //Return true if this road is chosen as part of the current trip
     public boolean isChosen() {
         return this.isChosen;
-    }
-
-    public void setIsChosen(boolean val) {
-        isChosen = val;
     }
 
 

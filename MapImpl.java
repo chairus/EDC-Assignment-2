@@ -9,7 +9,6 @@ package com.classes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -384,6 +383,12 @@ public class MapImpl implements Map {
         return true;
     }
 
+    /**
+     * This method compute the total distance of the trip by first finding the roads the lead from start
+     * place to end place by calling another method that finds the minimum spanning tree(MST) of the
+     * graph.
+     * @return int - The total distance of the trip
+     */
     private int computeTotalDistance() {
         int totalDistance = -1;
         List<ArrayList<Place>> setOfPlaces = new ArrayList<ArrayList<Place>>();
@@ -398,13 +403,27 @@ public class MapImpl implements Map {
         Collections.sort(sortedRoads, SortByLength);
 
         MST(sortedRoads, setOfPlaces, setOfRoads);        
+        Road startingRoad;
+        startingRoad = findRoadWithPlace(setOfRoads, startPlace);
 
         if (setOfPlaces.get(0).contains(this.startPlace) &&
             setOfPlaces.get(0).contains(this.endPlace)) {
-            totalDistance = findAndCalculateTrip(setOfRoads);
+            totalDistance = findAndCalculateTrip(setOfRoads, startingRoad);
         }
 
         return totalDistance;
+    }
+
+    private Road findRoadWithPlace(List<Road> rList, Place p) {
+        Road foundRoad = null;
+        for (Road r: rList) {
+            if (r.firstPlace().equals(p) || r.secondPlace().equals(p)) {
+                foundRoad = r;
+                break;
+            }
+        }
+        
+        return foundRoad;
     }
 
     /**
@@ -476,8 +495,53 @@ public class MapImpl implements Map {
         }
     }
 
-    public int findAndCalculateTrip(List<Road> MSTroad) {
-        int totalTrip = 0;
+    /**
+     * This method finds the roads that leads from start place to end place and returns the total distance.
+     * It uses the depth-first-search(DFS) algorithm to find the roads.
+     * @param MSTroad - These are the roads that are in the minimum spanning tree set
+     * @return int - The total distance of the trip
+     */
+    public int findAndCalculateTrip(List<Road> MSTroad, Road startingRoad) {
+        int totalTrip = 0, i = 0;
+        Road road;
+        List<Road> exploredRoads = new ArrayList<>();
+        List<Road> unexploredRoads = new ArrayList<>(MSTroad);
+        List<Road> currentRoads = new ArrayList<>();    // Current roads being explored
+        List<Place> currentPlaces = new ArrayList<>();  // Current places being explored
+
+        currentPlaces.add(startPlace);
+        while (i < unexploredRoads.size()) {
+            road = findRoadWithPlace(unexploredRoads, currentPlaces.get(currentPlaces.size() - 1));
+            if (road != null) {
+                unexploredRoads.remove(road);
+                currentRoads.add(road);
+                i -= 1;
+                // Check if one end of the found road is the end place
+                if (road.firstPlace().equals(endPlace) || road.secondPlace().equals(endPlace)) {
+                    break;
+                } else {
+                    // Add the other end of the found road into the end of the current places being explored
+                    if (road.firstPlace().equals(currentPlaces.get(currentPlaces.size() - 1))) {
+                        currentPlaces.add(road.secondPlace());
+                    } else {
+                        currentPlaces.add(road.firstPlace());
+                    }
+                }
+            } else {   // We have reached the end of the road. There are no more roads that leads to a place
+                currentPlaces.remove(currentPlaces.size() - 1);
+                exploredRoads.add(currentRoads.remove(currentRoads.size() - 1));
+            }
+            i += 1;
+        }
+
+        for (Road r: currentRoads) {
+            RoadImpl rImpl = (RoadImpl)r;
+            totalTrip += r.length();
+            rImpl.isChosen = true;
+            this.roads.remove(r);
+            this.roads.add(rImpl);
+        }
+
 
         return totalTrip;
     }
