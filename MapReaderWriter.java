@@ -131,12 +131,12 @@ public class MapReaderWriter implements MapIo {
         Place to = mp.findPlace(str[4]);
         try {
             if (from == null || to == null) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Invalid first or second place.");
             }
             if ((len = Integer.parseInt(str[3])) < 0) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Negative road length.");
             }
-            mp.newRoad(from, to, roadName, Integer.parseInt(str[3]));    
+            mp.newRoad(from, to, roadName, len);    
         } catch (IllegalArgumentException e) {
             throw new MapFormatException(lineNr, e.getMessage());
         }

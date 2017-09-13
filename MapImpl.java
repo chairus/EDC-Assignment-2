@@ -54,13 +54,13 @@ public class MapImpl implements Map {
         throws IllegalArgumentException {
         
         if (!checkPlaceName(placeName)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid place name.");
         }
 
         Place place = new PlaceImpl(placeName, xPos, yPos);
         
         if (!places.add(place)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Place already exist.");
         }
 
         // if (!addPlace(place)) {
@@ -115,13 +115,13 @@ public class MapImpl implements Map {
             this.findPlace(to.getName()) == null ||
             !checkRoadName(roadName) ||
             length < 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid road name.");
         }
 
         Road r = new RoadImpl(from, to, roadName, length);
         
         if (!roads.add(r)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Road already exist.");
         }
 
         // if (!addRoad(r)) {
@@ -163,11 +163,11 @@ public class MapImpl implements Map {
         Place pl = this.findPlace(p.getName());
 
         if (pl == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Place not found.");
         }
 
         if ((pl.getX() != p.getX()) || (pl.getY() != p.getY())) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Place not found.");
         }
 
         this.startPlace = p;
@@ -200,11 +200,11 @@ public class MapImpl implements Map {
         Place pl = this.findPlace(p.getName());
 
         if (pl == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Place not found.");
         }
 
         if ((pl.getX() != p.getX()) || (pl.getY() != p.getY())) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Place not found.");
         }
 
         this.endPlace = p;
