@@ -67,6 +67,11 @@ public class MapImpl implements Map {
         //     throw new IllegalArgumentException();
         // }
         
+        // Invoke the method on each listener
+        for (MapListener ml: listeners) {
+            ml.placesChanged();
+        }
+
         return place;
     }
 
@@ -74,7 +79,13 @@ public class MapImpl implements Map {
     //Remove a place from the map
     //If the place does not exist, returns without error
     public void deletePlace(Place s) {
-        places.remove(s);
+        if (places.remove(s)) {
+            // Invoke the method on each listener
+            for (MapListener ml: listeners) {
+                ml.placesChanged();
+            }
+        }
+        
     }
 
 
@@ -128,6 +139,11 @@ public class MapImpl implements Map {
         //     throw new IllegalArgumentException();
         // }
 
+        // Invoke the method on each listener
+        for (MapListener ml: listeners) {
+            ml.roadsChanged();
+        }
+
         return r;
     }
 
@@ -135,7 +151,12 @@ public class MapImpl implements Map {
     //Remove a road r from the map
     //If the road does not exist, returns without error
     public void deleteRoad(Road r) {
-        roads.remove(r);
+        if (roads.remove(r)) {
+            // Invoke the method on each listener
+            for (MapListener ml: listeners) {
+                ml.roadsChanged();
+            }
+        }
     }
 
 
