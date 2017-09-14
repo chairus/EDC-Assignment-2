@@ -60,6 +60,10 @@ public class MapImpl implements Map {
             throw new IllegalArgumentException("Invalid place name.");
         }
 
+        if (findPlace(placeName) != null) {
+            throw new IllegalArgumentException("Place already exist.");
+        }
+
         Place place = new PlaceImpl(placeName, xPos, yPos);
         
         places.add(place);
@@ -92,7 +96,7 @@ public class MapImpl implements Map {
         Place p = null;
 
         for (Place place: places) {
-            if (place.getName().compareTo(placeName) == 0) {
+            if (place.getName().compareToIgnoreCase(placeName) == 0) {
                 p = place;
                 break;
             }
@@ -119,11 +123,20 @@ public class MapImpl implements Map {
     public Road newRoad(Place from, Place to, String roadName, int length) 
         throws IllegalArgumentException {
         
-        if (this.findPlace(from.getName()) == null ||
-            this.findPlace(to.getName()) == null ||
-            !checkRoadName(roadName) ||
-            length < 0) {
+        if (this.findPlace(from.getName()) == null) {
+            throw new IllegalArgumentException("Place does not exist.");
+        }
+
+        if (this.findPlace(to.getName()) == null) {
+            throw new IllegalArgumentException("Place does not exist.");
+        }
+
+        if (!checkRoadName(roadName)) {
             throw new IllegalArgumentException("Invalid road name.");
+        }
+
+        if (length < 0) {
+            throw new IllegalArgumentException("Negative road length.");
         }
 
         Road r = new RoadImpl(from, to, roadName, length);
@@ -294,7 +307,7 @@ public class MapImpl implements Map {
      * @return boolean - True if the name of the place is valid, False otherwise
      */
     private boolean checkPlaceName(String placeName) {
-        if (placeName.compareTo(new String("")) == 0) {  // check if the placeName is empty
+        if (placeName.compareToIgnoreCase(new String("")) == 0) {  // check if the placeName is empty
             return false;
         }
 

@@ -231,7 +231,7 @@ public class MapImplTest {
         numberOfTestCases += 1;
         place = addPlace(map, "A", 23, 92);
         System.out.print("Checking if place has not been successfully added...");
-        result = isEqualPlace(place, new PlaceImpl("A", 23, 92));
+        result = isEqualPlace(place, null);
         if (result) {
             numberOfTestCasesPassed += 1;
         }
@@ -392,6 +392,16 @@ public class MapImplTest {
         System.out.println("Adding a road with invalid road name: Adelaide 12 10, Arndale 93 21, 9Camaro, 50");
         numberOfTestCases += 1;
         road = addRoad(mp, p1, p2, "9Camaro", 50);
+        System.out.print("Checking if road has not been successfully added...");
+        result = isEqualRoad(road, null);
+        if (result) {
+            numberOfTestCasesPassed += 1;
+        }
+        printResult(result);
+
+        System.out.println("Adding a road with invalid road name: Adelaide 12 10, Arndale 93 21, +Camaro, 50");
+        numberOfTestCases += 1;
+        road = addRoad(mp, p1, p2, "+Camaro", 50);
         System.out.print("Checking if road has not been successfully added...");
         result = isEqualRoad(road, null);
         if (result) {
