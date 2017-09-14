@@ -294,7 +294,306 @@ public class MapImpl implements Map {
         return str;
     }
 
-    /* ============================== DEFINED HELPER METHODS ============================== */
+    /* ==================================================================================== */
+    /* ============================ PLACE IMPLEMENTATION(START) =========================== */
+    /* ==================================================================================== */
+
+    /**
+     * This is the implementation of the Place interfce. This class contains a particular place and also
+     * the details of it's position and the roads the leads to it.
+     * @author cyrusvillacampa
+     */
+    public class PlaceImpl implements Place {
+        Set<Road> incomingRoads;    // contains all roads that reach this place
+        String placeName;   // contains the name of the place
+        int xPos, yPos; // contains the x and y coordinate of the place
+        List<PlaceListener> placeListeners;
+        boolean isStart, isEnd;
+    
+        // Constructor
+        public PlaceImpl(String placeName, int xPos, int yPos) {
+            this.placeName = placeName;
+            this.xPos = xPos;
+            this.yPos = yPos;
+            this.placeListeners = new ArrayList<>();
+            this.isStart = this.isEnd = false;
+        }
+    
+        //Add the PlaceListener pl to this place. 
+        //Note: A place can have multiple listeners
+        public void addListener(PlaceListener pl) {
+            placeListeners.add(pl);
+        }
+    
+    
+        //Delete the PlaceListener pl from this place.
+        public void deleteListener(PlaceListener pl) {
+            placeListeners.remove(pl);
+        }
+    
+    
+        //Return a set containing all roads that reach this place
+        public Set<Road> toRoads() {
+            Set<Road> toRoads = new LinkedHashSet<>();
+            
+            for (Road r: roads) {
+                if (r.firstPlace().equals(this) || r.secondPlace().equals(this)) {
+                    toRoads.add(r);
+                }
+            }
+    
+            return toRoads;
+        }
+    
+    
+        //Return the road from this place to dest, if it exists
+        //Returns null, if it does not
+        public Road roadTo(Place dest) {
+            Road road = null;
+    
+            for (Road r: roads) {
+                if (r.firstPlace().equals(this) || r.secondPlace().equals(this)) {
+                    if (r.firstPlace().equals(dest) || r.secondPlace().equals(dest)) {
+                        road = r;
+                    }
+                }
+            }
+
+            return road;
+        }
+        
+    
+        //Move the position of this place 
+        //by (dx,dy) from its current position
+        public void moveBy(int dx, int dy) {
+            this.xPos += dx;
+            this.yPos += dy;
+        }
+        
+    
+        //Return the name of this place 
+        public String getName() {
+            return placeName;
+        }
+        
+    
+        //Return the X position of this place
+        public int getX() {
+            return xPos;
+        }
+        
+    
+        //Return the Y position of this place
+        public int getY() {
+            return yPos;
+        }
+    
+        public void setStartPlace(boolean val) {
+            isStart = val;
+        }
+    
+        public void setEndPlace(boolean val) {
+            isEnd = val;
+        }
+    
+    
+        //Return true if this place is the starting place for a trip
+        public boolean isStartPlace() {
+            return isStart;
+        }
+    
+    
+        //Return true if this place is the ending place for a trip
+        public boolean isEndPlace() {
+            return isEnd;
+        }
+    
+    
+        //Return a string containing information about this place 
+        //in the form (without the quotes, of course!) :
+        //"placeName(xPos,yPos)"  
+        public String toString() {
+            String str;
+    
+            str = new String(this.placeName + "(" + this.xPos + "," + this.yPos + ")");
+    
+            return str;
+        }
+    
+        @Override
+        public boolean equals(Object p) {
+            if (p == null) {
+                return false;
+            }
+    
+            if (this == p) {
+                return true;
+            }
+    
+            if (!(p instanceof PlaceImpl)) {
+                return false;
+            }
+    
+            return equalsHelper(p);
+        }
+    
+        private boolean equalsHelper(Object p) {
+            PlaceImpl pl = (PlaceImpl)p;
+    
+            if (pl.getName().compareTo(this.placeName) != 0 ||
+                pl.getX() != this.xPos ||
+                pl.getY() != this.yPos) {
+                return false;
+            }
+    
+            return true;
+        }
+    
+        @Override
+        public int hashCode() {
+            return Objects.hash(placeName, xPos, yPos);
+        }
+    }
+
+    /* ==================================================================================== */
+    /* ============================ PLACE IMPLEMENTATION(END) ============================= */
+    /* ==================================================================================== */
+
+    /* ==================================================================================== */
+    /* ============================ ROAD IMPLEMENTATION(START) ============================ */
+    /* ==================================================================================== */
+
+    /**
+     * This is the implementation of the Road interfce. This class contains a particular road, two
+     * places(this road connects them together) and also the details of it's length and road name.
+     * @author cyrusvillacampa
+     */
+    public class RoadImpl implements Road {
+        private Place firstPlace, secondPlace;
+        private String roadName;
+        private int length; // kilometres
+        public boolean isChosen;
+        private List<RoadListener> roadListeners;
+    
+        public RoadImpl(Place place1, Place place2, String roadName, int length) {
+            storePlaces(place1, place2);
+            this.roadName = roadName;
+            this.length = length;
+            this.isChosen = false;
+            this.roadListeners = new ArrayList<>();
+        }
+    
+        //Add the RoadListener rl to this place.
+        //Note: A road can have multiple listeners
+        public void addListener(RoadListener rl) {
+            roadListeners.add(rl);
+        }
+    
+    
+        //Delete the RoadListener rl from this place.
+        public void deleteListener(RoadListener rl) {
+            roadListeners.remove(rl);
+        }
+    
+    
+        //Return the first place of this road
+        //Note: The first place of a road is the place whose name
+        //comes EARLIER in the alphabet.
+        public Place firstPlace() {
+            return this.firstPlace;
+        }
+        
+    
+        //Return the second place of this road
+        //Note: The second place of a road is the place whose name
+        //comes LATER in the alphabet.
+        public Place secondPlace() {
+            return this.secondPlace;
+        }
+        
+    
+        //Return true if this road is chosen as part of the current trip
+        public boolean isChosen() {
+            return this.isChosen;
+        }
+    
+    
+        //Return the name of this road
+        public String roadName() {
+            return this.roadName;
+        }
+        
+    
+        //Return the length of this road
+        public int length() {
+            return this.length;
+        }
+    
+        
+        //Return a string containing information about this road 
+        //in the form (without quotes, of course!):
+        //"firstPlace(roadName:length)secondPlace"
+        public String toString() {
+            String str = new String(this.firstPlace +
+                            "(" + this.roadName + ":" + this.length + ")" + 
+                                    this.secondPlace);
+    
+            return str;
+        }
+    
+        @Override
+        public boolean equals(Object r) {
+            if (r == null) {
+                return false;
+            }
+    
+            if (this == r) {
+                return true;
+            }
+    
+            if (!(r instanceof RoadImpl)) {
+                return false;
+            }
+    
+            return equalsHelper(r);
+        }
+    
+        private boolean equalsHelper(Object r) {
+            RoadImpl rd = (RoadImpl)r;
+    
+            if (rd.roadName().compareTo(this.roadName) != 0 ||
+                !rd.firstPlace().equals(this.firstPlace) ||
+                !rd.secondPlace().equals(this.secondPlace) ||
+                rd.length() != this.length) {
+                return false;
+            }
+    
+            return true;
+        }
+    
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.roadName, this.firstPlace, this.secondPlace, this.length);
+        }
+    
+        private void storePlaces(Place p1, Place p2) {
+            if (p1.getName().compareTo(p2.getName()) < 0) {
+                this.firstPlace = p1;
+                this.secondPlace = p2;
+            } else {
+                this.firstPlace = p2;
+                this.secondPlace = p1;
+            }
+        }
+    }
+    /* ==================================================================================== */
+    /* ============================= ROAD IMPLEMENTATION(END) ============================= */
+    /* ==================================================================================== */
+
+
+    /* ==================================================================================== */
+    /* ========================== DEFINED HELPER METHODS(START) =========================== */
+    /* ==================================================================================== */
 
     /**
      * Checks if the given place name satisfies the requirements set out in the specification.
@@ -612,4 +911,9 @@ public class MapImpl implements Map {
     public void printRoads() {
         System.out.println(this.roads);
     }
+
+    /* ==================================================================================== */
+    /* ============================ DEFINED HELPER METHODS(END) =========================== */
+    /* ==================================================================================== */
+
 }
