@@ -121,8 +121,8 @@ public class MapImplTest {
         Place rundle = new PlaceImpl("Rundle", 11, 22);
         Place a_ = new PlaceImpl("A_", 23, 92);
 
-        map.setEndPlace(cleland);
-        // map.setStartPlace(cleland);
+        map.setEndPlace(a_);
+        // map.setStartPlace(a_);
         System.out.println("Start place: " + map.getStartPlace());
         System.out.println("End place: " + map.getEndPlace());
 

@@ -256,7 +256,7 @@ public class MapImpl implements Map {
             return totalDistance;
         }
 
-        if (isEqualPlace(this.startPlace, this.endPlace)) {
+        if (this.startPlace.equals(this.endPlace)) {
             totalDistance = 0;
             return totalDistance;
         }
@@ -307,36 +307,12 @@ public class MapImpl implements Map {
      */
     private boolean addPlace(Place place) {
         for (Place p: this.places) {
-            if (isEqualPlace(place, p)) {
+            if (place.equals(p)) {
                 return false;
             }
         }
 
         this.places.add(place);
-
-        return true;
-    }
-
-    private boolean isEqualPlace(Place pl1, Place pl2) {
-        if (pl1 == pl2) {
-            return true;
-        }
-
-        if ((pl1 == null && pl2 != null) || pl1 != null && pl2 == null) {
-            return false;
-        }
-
-        if (pl1.getName().compareTo(pl2.getName()) != 0) {
-            return false;
-        }
-
-        if (!(pl1.getX() == pl2.getX())) {
-            return false;
-        }
-
-        if (!(pl1.getY() == pl2.getY())) {
-            return false;
-        }
 
         return true;
     }
@@ -347,47 +323,13 @@ public class MapImpl implements Map {
      */
     private boolean addRoad(Road road) {
         for (Road r: this.roads) {
-            if (isEqualRoad(road, r)) {
+            if (road.equals(r)) {
                 return false;
             }
         }
 
         this.roads.add(road);
 
-        return true;
-    }
-
-    /**
-     * This method checks two roads if they are equal.
-     * @param r1 - The first road
-     * @param r2 - The second road
-     * @return boolean - True if the arguments are equal, False otherwise
-     */
-    private boolean isEqualRoad(Road r1, Road r2) {
-        if (r1 == r2) {
-            return true;
-        }
-
-        if ((r1 == null && r2 != null) || (r1 != null && r2 == null)) {
-            return false;
-        }
-
-        if (r1.roadName().compareTo(r2.roadName()) != 0) {
-            return false;
-        }
-
-        if (!isEqualPlace(r1.firstPlace(), r2.firstPlace())) {
-            return false;
-        }
-
-        if (!isEqualPlace(r1.secondPlace(), r2.secondPlace())) {
-            return false;
-        }
-
-        if (r1.length() != r2.length()) {
-            return false;
-        }
-        
         return true;
     }
 
@@ -435,17 +377,14 @@ public class MapImpl implements Map {
      * @return int - The total distance of the trip
      */
     private int computeTotalDistance() {
-        int totalDistance = -1;
+        int totalDistance = 0;
         List<Place> finishedPlaces = new ArrayList<>();  // S in Cormen et al book
         List<Road> roadsInSSSPSet = new ArrayList<>();  // Roads that are in the SSSP set
 
         SSSP(finishedPlaces, roadsInSSSPSet);
 
         System.out.println("finishedPlaces: " + finishedPlaces);
-        if (finishedPlaces.contains(this.startPlace) &&
-            finishedPlaces.contains(this.endPlace)) {
-            totalDistance = findAndCalculateTrip(roadsInSSSPSet);
-        }
+        totalDistance = findAndCalculateTrip(roadsInSSSPSet);
 
         return totalDistance;
     }
@@ -466,7 +405,7 @@ public class MapImpl implements Map {
 
         currentPlaces.add(startPlace);
         // System.out.println("Current places: " + currentPlaces);
-        while (!unexploredRoads.isEmpty()) {
+        while (!unexploredRoads.isEmpty() || !currentRoads.isEmpty()) {
             foundRoads = findRoadsWithPlace(unexploredRoads, currentPlaces.get(currentPlaces.size() - 1));
             if (foundRoads.size() > 0) {
                 Road road = foundRoads.get(0);
@@ -492,9 +431,6 @@ public class MapImpl implements Map {
             System.out.println("Current roads: " + currentRoads);
             System.out.println("Current places: " + currentPlaces);
         }
-        // System.out.println("Exited while loop.");
-        // System.out.println("Current places: " + currentPlaces);
-        // System.out.println("Current roads: " + currentRoads);
 
         for (Road r: currentRoads) {
             RoadImpl rImpl = (RoadImpl)r;
@@ -502,6 +438,10 @@ public class MapImpl implements Map {
             rImpl.isChosen = true;
             this.roads.remove(r);
             this.roads.add(rImpl);
+        }
+
+        if (totalTrip == 0) {
+            totalTrip = -1;
         }
 
         // Iterator it = currentRoads.iterator();
