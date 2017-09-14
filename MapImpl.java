@@ -62,13 +62,7 @@ public class MapImpl implements Map {
 
         Place place = new PlaceImpl(placeName, xPos, yPos);
         
-        if (!places.add(place)) {
-            throw new IllegalArgumentException("Place already exist.");
-        }
-
-        // if (!addPlace(place)) {
-        //     throw new IllegalArgumentException();
-        // }
+        places.add(place);
         
         // Invoke the method on each listener
         for (MapListener ml: listeners) {
@@ -133,14 +127,7 @@ public class MapImpl implements Map {
         }
 
         Road r = new RoadImpl(from, to, roadName, length);
-        
-        if (!roads.add(r)) {
-            throw new IllegalArgumentException("Road already exist.");
-        }
-
-        // if (!addRoad(r)) {
-        //     throw new IllegalArgumentException();
-        // }
+        roads.add(r);
 
         // Invoke the method on each listener
         for (MapListener ml: listeners) {
@@ -377,16 +364,14 @@ public class MapImpl implements Map {
      * @return int - The total distance of the trip
      */
     private int computeTotalDistance() {
-        int totalDistance = 0;
-        List<Place> finishedPlaces = new ArrayList<>();  // S in Cormen et al book
-        List<Road> roadsInSSSPSet = new ArrayList<>();  // Roads that are in the SSSP set
+        // Places where their trip distance leading to it has already been calculated
+        List<Place> finishedPlaces = new ArrayList<>();
+        // Roads that are in the SSSP set
+        List<Road> roadsInSSSPSet = new ArrayList<>();
 
         SSSP(finishedPlaces, roadsInSSSPSet);
 
-        System.out.println("finishedPlaces: " + finishedPlaces);
-        totalDistance = findAndCalculateTrip(roadsInSSSPSet);
-
-        return totalDistance;
+        return findAndCalculateTrip(roadsInSSSPSet);
     }
 
     /**
@@ -455,7 +440,7 @@ public class MapImpl implements Map {
     }
 
     /**
-     * This method runs Dijkstra's algorithm.
+     * This method invokes the methods to run the Dijkstra's algorithm.
      */
     private void SSSP (List<Place> finishedPlaces, List<Road> roadsInSSSPSet) {
         // A priority queue that stores a pair (place, estimatedDistance).
@@ -465,6 +450,9 @@ public class MapImpl implements Map {
         runSSSPAlgorithm(placeNodePriorityQueue, finishedPlaces, roadsInSSSPSet);
     }
 
+    /**
+     * 
+     */
     private void initializeSingleSource(Queue<PlaceNode> priorityQueue, Place sourceNode) {
         for (Place p: this.places) {
             if (p.equals(sourceNode)) {
@@ -475,6 +463,9 @@ public class MapImpl implements Map {
         }
     }
 
+    /**
+     * This method 
+     */
     private void runSSSPAlgorithm(Queue<PlaceNode> priorityQueue, 
                                   List<Place> finishedPlaces,
                                   List<Road> roadsInSSSPSet) {
@@ -487,35 +478,31 @@ public class MapImpl implements Map {
             System.out.println("Smallest estimate: " + v);
             finishedPlaces.add(v.getPlaceNode());
             finishedPlaceNodes.add(v);
-            boolean adjNodesInSSSPSet = relaxEdge(v,priorityQueue, finishedPlaces, roadsInSSSPSet);
-            // if (!adjNodesInSSSPSet) {
-            //     break;
-            // }
+            relaxEdge(v,priorityQueue, finishedPlaces, roadsInSSSPSet);
             System.out.println("Relaxed nodes: " + priorityQueue);
             v = priorityQueue.peek();
-            Road roadTobeAddedToSSSPSet = null;
             if (v != null) {
-                List<Road> foundRoads = findRoadsWithPlace(new ArrayList<Road>(this.roads), v.getPlaceNode());
-    
-                for (Road r: foundRoads) {
-                    PlaceNode otherNode = new PlaceNode(r.firstPlace(), 0);
+                if (v.getPlaceNodeValue() < Integer.MAX_VALUE) {
+                    List<Road> foundRoads = findRoadsWithPlace(new ArrayList<Road>(this.roads), v.getPlaceNode());
                     
-                    if (r.firstPlace().equals(v.getPlaceNode())) {
-                        otherNode = new PlaceNode(r.secondPlace(), 0);
-                    }
-                    
-                    if (finishedPlaceNodes.contains(otherNode)) {
-                        PlaceNode pn = finishedPlaceNodes.get(finishedPlaceNodes.indexOf(otherNode));
-                        if ((pn.getPlaceNodeValue() + r.length()) == v.getPlaceNodeValue()) {
-                            roadTobeAddedToSSSPSet = r;
-                            break;
+                    for (Road r: foundRoads) {
+                        PlaceNode otherNode = new PlaceNode(r.firstPlace(), 0);
+                        
+                        if (r.firstPlace().equals(v.getPlaceNode())) {
+                            otherNode = new PlaceNode(r.secondPlace(), 0);
+                        }
+                        
+                        if (finishedPlaceNodes.contains(otherNode)) {
+                            PlaceNode pn = finishedPlaceNodes.get(finishedPlaceNodes.indexOf(otherNode));
+                            if ((pn.getPlaceNodeValue() + r.length()) == v.getPlaceNodeValue()) {
+                                roadsInSSSPSet.add(r);
+                                break;
+                            }
                         }
                     }
-                }
-            }
-
-            if (roadTobeAddedToSSSPSet != null) {
-                roadsInSSSPSet.add(roadTobeAddedToSSSPSet);
+                } else {    // This means that the graph has partitions
+                    break;
+                }   
             }
             
             System.out.println("Roads in SSSP set: " + roadsInSSSPSet);
@@ -529,14 +516,12 @@ public class MapImpl implements Map {
      * @param pq
      * @param finishedPlaces
      * @param roadsInSSSPSet
-     * @return boolean
      */
-    private boolean relaxEdge(PlaceNode pn, 
+    private void relaxEdge(PlaceNode pn, 
                            Queue<PlaceNode> pq, 
                            List<Place> finishedPlaces,
                            List<Road> roadsInSSSPSet) {
         List<Road> foundRoads = findRoadsWithPlace(new ArrayList<Road>(this.roads), pn.getPlaceNode());
-        boolean adjNodesInSSSPSet = false;
 
         for (Road r: foundRoads) {
             PlaceNode adjPlace = new PlaceNode(r.firstPlace(), 0);
@@ -547,8 +532,6 @@ public class MapImpl implements Map {
             // Check if the place is already in the current SSSP set, if not then relax
             if (!finishedPlaces.contains(adjPlace.getPlaceNode())) {
                 adjPlace.setPlaceNodeValue(r.length() + pn.getPlaceNodeValue());
-
-                Iterator<PlaceNode> it = pq.iterator();
                 
                 for (PlaceNode u: pq) {
                     if (u.equals(adjPlace)) {
@@ -559,10 +542,8 @@ public class MapImpl implements Map {
                         break;
                     } 
                 }
-                adjNodesInSSSPSet = true;
             }
         }
-        return adjNodesInSSSPSet;
     }
 
     /**
@@ -570,7 +551,7 @@ public class MapImpl implements Map {
      * the given place argument. This method returns the found road otherwise null.
      * @param rList - The list of roads
      * @param p - The place to search for
-     * @return Road - The found road
+     * @return foundRoads - The found roads
      */
     private List<Road> findRoadsWithPlace(List<Road> rList, Place p) {
         List<Road> foundRoads = new ArrayList<>();
@@ -584,7 +565,8 @@ public class MapImpl implements Map {
     }
 
     /**
-     * A class that holds a name/key and it's value. This class is used to run Dijkstra's algorithm.
+     * A class that holds a name/key and it's value. This class is used to represet a node and its
+     * current path estimate in Dijkstra's algorithm.
      */
     private class PlaceNode {
         Place place;
@@ -635,7 +617,7 @@ public class MapImpl implements Map {
     }
 
     /**
-     * This is used to sort the node by their value/priority in ascending order.
+     * This is used for the priority queue to sort the node by their value/priority in ascending order.
      */
     public Comparator<PlaceNode> valueComparator  = new Comparator<PlaceNode>() {
         public int compare(PlaceNode a, PlaceNode b) {
