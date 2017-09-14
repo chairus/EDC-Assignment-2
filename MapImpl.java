@@ -441,91 +441,14 @@ public class MapImpl implements Map {
 
         SSSP(finishedPlaces, roadsInSSSPSet);
 
+        System.out.println("finishedPlaces: " + finishedPlaces);
         if (finishedPlaces.contains(this.startPlace) &&
             finishedPlaces.contains(this.endPlace)) {
             totalDistance = findAndCalculateTrip(roadsInSSSPSet);
         }
 
-        // List<ArrayList<Place>> setOfPlaces = new ArrayList<ArrayList<Place>>();
-        // for (Place p: this.places) {    // Initialize each place to belong to it's own set
-        //     ArrayList<Place> tempList = new ArrayList<>();
-        //     tempList.add(p);
-        //     setOfPlaces.add(tempList); 
-        // }
-        
-        // List<Road> setOfRoads = new ArrayList<>(); // The roads that belong to the MST
-        // List<Road> sortedRoads = new ArrayList<>(this.roads);
-        // Collections.sort(sortedRoads, SortByLength);
-
-        // MST(sortedRoads, setOfPlaces, setOfRoads);        
-
-        // if (setOfPlaces.get(0).contains(this.startPlace) &&
-        //     setOfPlaces.get(0).contains(this.endPlace)) {
-        //     totalDistance = findAndCalculateTrip(setOfRoads);
-        // }
-
         return totalDistance;
     }
-
-    /**
-     * This method is an implementation of Kruskal's algorithm in finding the MST of a bidirected
-     * graph. It returns a list of lists where the the first list is also a list of lists where
-     * each list is a set of places(there could possibly be more than two sets of places if there
-     * is a partition in the graph) and the second list is the set of roads that belong to the 
-     * MST set.
-     */
-    // private void MST(List<Road> sortedRoads, List<ArrayList<Place>> setOfPlaces, List<Road> setOfRoads) {
-    //     int numberOfPlaces = this.places.size();
-    //     System.out.println(sortedRoads);
-    //     for (Road r: sortedRoads) {
-    //         findSetAndMergePlace(r, setOfPlaces, setOfRoads);
-    //     }
-
-    //     System.out.println("MST roads: " + setOfRoads);
-    //     // System.out.println("Set of places: " + setOfPlaces);
-    // }
-
-    /**
-     * This method merges the two set that the two places belong to if they belong to different
-     * sets.
-     */
-    // private void findSetAndMergePlace(Road r, List<ArrayList<Place>> sp, List<Road> sr) {
-    //     // i is the index of the set where p1 belongs to and j is the index of the set where p2
-    //     // belongs to in set s, and k is just a counter
-    //     int i = 0, j = 0, k = 0;
-    //     Place p1 = r.firstPlace();
-    //     Place p2 = r.secondPlace();
-    //     boolean foundSetForP1 = false;
-    //     boolean foundSetForP2 = false;
-        
-    //     while (k < sp.size()) {
-    //         if (sp.get(k).contains(p1) && !foundSetForP1) {
-    //             i = k;
-    //             foundSetForP1 = true;
-    //         }
-
-    //         if (sp.get(k).contains(p2) && !foundSetForP2) {
-    //             j = k;
-    //             foundSetForP2 = true;
-    //         }
-
-    //         if (foundSetForP1 && foundSetForP2) {
-    //             break;
-    //         }
-    //         k++;
-    //     }
-
-    //     ArrayList<Place> newSet;
-    //     // Merge two sets s1 and s2, if they belong to different sets and add the road to the 
-    //     // MST set.
-    //     if (i != j) {
-    //         newSet = sp.get(i);
-    //         newSet.addAll(sp.get(j));
-    //         sp.set(i, newSet);
-    //         sp.remove(j);
-    //         sr.add(r);
-    //     }
-    // }
 
     /**
      * This method finds the roads that leads from start place to end place and returns the total distance.
@@ -592,15 +515,6 @@ public class MapImpl implements Map {
     }
 
     /**
-     * This is used to sort the roads by their length in ascending order.
-     */
-    // private Comparator<Road> SortByLength  = new Comparator<Road>() {
-    //     public int compare(Road a, Road b) {
-    //         return a.length() - b.length();
-    //     }
-    // };
-
-    /**
      * This method runs Dijkstra's algorithm.
      */
     private void SSSP (List<Place> finishedPlaces, List<Road> roadsInSSSPSet) {
@@ -627,31 +541,35 @@ public class MapImpl implements Map {
         // Stores the nodes where their shortest path from the source has already been determined.
         List<PlaceNode> finishedPlaceNodes = new ArrayList<>();
         System.out.println("Initialized nodes: " + priorityQueue);
-        PlaceNode v = priorityQueue.poll();
+        
         while (!priorityQueue.isEmpty()) {
+            PlaceNode v = priorityQueue.poll();
             System.out.println("Smallest estimate: " + v);
             finishedPlaces.add(v.getPlaceNode());
             finishedPlaceNodes.add(v);
-            boolean hasRelaxed = relaxEdge(v,priorityQueue, finishedPlaces, roadsInSSSPSet);
-            if (!hasRelaxed) {
-                break;
-            }
-            v = priorityQueue.poll();
-            List<Road> foundRoads = findRoadsWithPlace(new ArrayList<Road>(this.roads), v.getPlaceNode());
+            boolean adjNodesInSSSPSet = relaxEdge(v,priorityQueue, finishedPlaces, roadsInSSSPSet);
+            // if (!adjNodesInSSSPSet) {
+            //     break;
+            // }
+            System.out.println("Relaxed nodes: " + priorityQueue);
+            v = priorityQueue.peek();
             Road roadTobeAddedToSSSPSet = null;
-
-            for (Road r: foundRoads) {
-                PlaceNode otherNode = new PlaceNode(r.firstPlace(), 0);
-                
-                if (r.firstPlace().equals(v.getPlaceNode())) {
-                    otherNode = new PlaceNode(r.secondPlace(), 0);
-                }
-                
-                if (finishedPlaceNodes.contains(otherNode)) {
-                    PlaceNode pn = finishedPlaceNodes.get(finishedPlaceNodes.indexOf(otherNode));
-                    if ((pn.getPlaceNodeValue() + r.length()) == v.getPlaceNodeValue()) {
-                        roadTobeAddedToSSSPSet = r;
-                        break;
+            if (v != null) {
+                List<Road> foundRoads = findRoadsWithPlace(new ArrayList<Road>(this.roads), v.getPlaceNode());
+    
+                for (Road r: foundRoads) {
+                    PlaceNode otherNode = new PlaceNode(r.firstPlace(), 0);
+                    
+                    if (r.firstPlace().equals(v.getPlaceNode())) {
+                        otherNode = new PlaceNode(r.secondPlace(), 0);
+                    }
+                    
+                    if (finishedPlaceNodes.contains(otherNode)) {
+                        PlaceNode pn = finishedPlaceNodes.get(finishedPlaceNodes.indexOf(otherNode));
+                        if ((pn.getPlaceNodeValue() + r.length()) == v.getPlaceNodeValue()) {
+                            roadTobeAddedToSSSPSet = r;
+                            break;
+                        }
                     }
                 }
             }
@@ -660,7 +578,6 @@ public class MapImpl implements Map {
                 roadsInSSSPSet.add(roadTobeAddedToSSSPSet);
             }
             
-            System.out.println("Relaxed nodes: " + priorityQueue);
             System.out.println("Roads in SSSP set: " + roadsInSSSPSet);
         }
     }
