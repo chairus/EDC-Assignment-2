@@ -535,7 +535,7 @@ public class MapImpl implements Map {
      */
     public int findAndCalculateTrip(List<Road> roadsInSSSPSet) {
         int totalTrip = 0;
-        Road road;
+        List<Road> foundRoads;
         List<Road> exploredRoads = new ArrayList<>();
         List<Road> unexploredRoads = new ArrayList<>(roadsInSSSPSet);
         List<Road> currentRoads = new ArrayList<>();    // Current roads being explored
@@ -544,17 +544,18 @@ public class MapImpl implements Map {
         currentPlaces.add(startPlace);
         // System.out.println("Current places: " + currentPlaces);
         while (!unexploredRoads.isEmpty()) {
-            road = findRoadsWithPlace(unexploredRoads, currentPlaces.get(currentPlaces.size() - 1)).get(0);
-            // System.out.println("Found road: " + road);
-            if (road != null) {
+            foundRoads = findRoadsWithPlace(unexploredRoads, currentPlaces.get(currentPlaces.size() - 1));
+            if (foundRoads.size() > 0) {
+                Road road = foundRoads.get(0);
+                System.out.println("Found road: " + road);
                 unexploredRoads.remove(road);
                 currentRoads.add(road);
-                // System.out.println("Unexplored roads: " + unexploredRoads);
+                System.out.println("Unexplored roads: " + unexploredRoads);
                 // Check if one end of the found road is the end place
                 if (road.firstPlace().equals(endPlace) || road.secondPlace().equals(endPlace)) {
                     break;
                 } else {
-                    // Add the other end of the found road into the end of the current places being explored
+                    // Add the other end of the found road at the end of the current places being explored
                     if (road.firstPlace().equals(currentPlaces.get(currentPlaces.size() - 1))) {
                         currentPlaces.add(road.secondPlace());
                     } else {
@@ -565,8 +566,8 @@ public class MapImpl implements Map {
                 currentPlaces.remove(currentPlaces.size() - 1);
                 exploredRoads.add(currentRoads.remove(currentRoads.size() - 1));
             }
-            // System.out.println("Current roads: " + currentRoads);
-            // System.out.println("Current places: " + currentPlaces);
+            System.out.println("Current roads: " + currentRoads);
+            System.out.println("Current places: " + currentPlaces);
         }
         // System.out.println("Exited while loop.");
         // System.out.println("Current places: " + currentPlaces);
@@ -623,34 +624,62 @@ public class MapImpl implements Map {
     private void runSSSPAlgorithm(Queue<PlaceNode> priorityQueue, 
                                   List<Place> finishedPlaces,
                                   List<Road> roadsInSSSPSet) {
+        // Stores the nodes where their shortest path from the source has already been determined.
+        List<PlaceNode> finishedPlaceNodes = new ArrayList<>();
+        System.out.println("Initialized nodes: " + priorityQueue);
+        PlaceNode v = priorityQueue.poll();
         while (!priorityQueue.isEmpty()) {
-            System.out.println("Initialized nodes: " + priorityQueue);
-            PlaceNode u = priorityQueue.poll();
-            System.out.println("Smallest estimate: " + u);
-            finishedPlaces.add(u.getPlaceNode());
-            boolean hasRelaxed = relaxEdge(u,priorityQueue, finishedPlaces, roadsInSSSPSet);
+            System.out.println("Smallest estimate: " + v);
+            finishedPlaces.add(v.getPlaceNode());
+            finishedPlaceNodes.add(v);
+            boolean hasRelaxed = relaxEdge(v,priorityQueue, finishedPlaces, roadsInSSSPSet);
             if (!hasRelaxed) {
                 break;
             }
-            PlaceNode v = priorityQueue.peek();
+            v = priorityQueue.poll();
             List<Road> foundRoads = findRoadsWithPlace(new ArrayList<Road>(this.roads), v.getPlaceNode());
-            
+            Road roadTobeAddedToSSSPSet = null;
+
             for (Road r: foundRoads) {
-                if (r.firstPlace().equals(u.getPlaceNode()) || 
-                    r.secondPlace().equals(u.getPlaceNode())) {
-                    roadsInSSSPSet.add(r);
+                PlaceNode otherNode = new PlaceNode(r.firstPlace(), 0);
+                
+                if (r.firstPlace().equals(v.getPlaceNode())) {
+                    otherNode = new PlaceNode(r.secondPlace(), 0);
+                }
+                
+                if (finishedPlaceNodes.contains(otherNode)) {
+                    PlaceNode pn = finishedPlaceNodes.get(finishedPlaceNodes.indexOf(otherNode));
+                    if ((pn.getPlaceNodeValue() + r.length()) == v.getPlaceNodeValue()) {
+                        roadTobeAddedToSSSPSet = r;
+                        break;
+                    }
                 }
             }
+
+            if (roadTobeAddedToSSSPSet != null) {
+                roadsInSSSPSet.add(roadTobeAddedToSSSPSet);
+            }
+            
+            System.out.println("Relaxed nodes: " + priorityQueue);
             System.out.println("Roads in SSSP set: " + roadsInSSSPSet);
         }
     }
 
+    /**
+     * This method relaxes the edges and returns a boolean value if all the nodes adjacent to the
+     * current node is already in the SSSP set.
+     * @param pn
+     * @param pq
+     * @param finishedPlaces
+     * @param roadsInSSSPSet
+     * @return boolean
+     */
     private boolean relaxEdge(PlaceNode pn, 
                            Queue<PlaceNode> pq, 
                            List<Place> finishedPlaces,
                            List<Road> roadsInSSSPSet) {
         List<Road> foundRoads = findRoadsWithPlace(new ArrayList<Road>(this.roads), pn.getPlaceNode());
-        boolean relaxed = false;
+        boolean adjNodesInSSSPSet = false;
 
         for (Road r: foundRoads) {
             PlaceNode adjPlace = new PlaceNode(r.firstPlace(), 0);
@@ -666,29 +695,17 @@ public class MapImpl implements Map {
                 
                 for (PlaceNode u: pq) {
                     if (u.equals(adjPlace)) {
-                        if (u.getPlaceNodeValue() > adjPlace.getPlaceNodeValue()) {
-                            // u.setPlaceNodeValue(adjPlace.getPlaceNodeValue());
+                        if (u.getPlaceNodeValue() >= adjPlace.getPlaceNodeValue()) {
                             pq.remove(adjPlace);
                             pq.offer(adjPlace);
-                            relaxed = true;
                         }
                         break;
                     } 
                 }
-
-                // while (it.hasNext()) {
-                //     PlaceNode u = it.next();
-                //     if (u.equals(adjPlace)) {
-                //         if (u.getPlaceNodeValue() > adjPlace.getPlaceNodeValue()) {
-                //             u.setPlaceNodeValue(adjPlace.getPlaceNodeValue());
-                //             relaxed = true;
-                //         }
-                //         break;
-                //     } 
-                // }
+                adjNodesInSSSPSet = true;
             }
         }
-        return relaxed;
+        return adjNodesInSSSPSet;
     }
 
     /**
