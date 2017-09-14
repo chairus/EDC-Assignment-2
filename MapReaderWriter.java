@@ -143,6 +143,7 @@ public class MapReaderWriter implements MapIo {
 
         Place from = mp.findPlace(str[1]);
         Place to = mp.findPlace(str[4]);
+        len = Integer.parseInt(str[3]);
 
         try {
             mp.newRoad(from, to, roadName, len);    
