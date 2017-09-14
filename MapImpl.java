@@ -249,21 +249,16 @@ public class MapImpl implements Map {
     //Returns the total distance of the trip.
     //Returns -1, if there is no route from start to end
     public int getTripDistance() {
-        int totalDistance;
-
         if (this.startPlace == null || this.endPlace == null) {
-            totalDistance = -1;
-            return totalDistance;
+            return -1;
         }
 
         if (this.startPlace.equals(this.endPlace)) {
-            totalDistance = 0;
-            return totalDistance;
+            return 0;
         }
         
         // Compute total distance of the trip
-        totalDistance = computeTotalDistance();
-        return totalDistance;
+        return computeTotalDistance();
     }
 
 
@@ -496,10 +491,10 @@ public class MapImpl implements Map {
     /**
      * This method relaxes the edges and returns a boolean value if all the nodes adjacent to the
      * current node is already in the SSSP set.
-     * @param pn
-     * @param pq
-     * @param finishedPlaces
-     * @param roadsInSSSPSet
+     * @param pn - 
+     * @param pq - Priority queue
+     * @param finishedPlaces - A set that contains the places where a path distance to them has already determined 
+     * @param roadsInSSSPSet - A set that contains the roads that are in the single-source-shortest-path set
      */
     private void relaxEdge(PlaceNode pn, 
                            Queue<PlaceNode> pq, 

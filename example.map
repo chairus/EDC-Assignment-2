@@ -21,7 +21,6 @@ place Portland 0 0
 place Sale 250 250
 place TailemBend 0 0
 
-road Ballarat Western8 113 Melbourne
 road Colac Princes1 74 Geelong
 road Geelong Princes1 74 Melbourne
 road Hamilton Henty 130 Horsham
@@ -32,9 +31,8 @@ road Ouyen Ouyen 137 Pinarroo
 road Ouyen Ouyen 222 StArnaud
 road Pinarroo  146 TailemBend
 road Portland Princes1 100 Warnambool
+road Horsham Wimmera 109 StArnaud
 road Ararat Pyrenees 63 Avoca
-road Ararat Western8 95 Horsham
-road Ararat Western8 92 Ballarat
 road Avoca Sunrasia 63 StArnaud
 road Avoca Sunrasia 71 Ballarat
 road Keith Riddoch 213 MtGambier
@@ -45,10 +43,12 @@ road Morwell Princes1 63 Sale
 road MtGambier Princes1 115 Portland
 road Sale Gippsland 72 Yarram
 road Melbourne Gippsland 215 Yarram
-road Horsham Wimmera 109 StArnaud
+road Ballarat Western8 113 Melbourne
+road Ararat Western8 92 Ballarat
+road Ararat Western8 95 Horsham
 road Bordertown Western8 157 Horsham
 road Bordertown Western8 45 Keith
 road Keith Western8 137 TailemBend
 road Adelaide Princes1 107 TailemBend
-start StArnaud
+start Melbourne
 end Adelaide

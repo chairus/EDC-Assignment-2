@@ -123,7 +123,7 @@ public class MapImplTest {
         Place a_ = new PlaceImpl("A_", 23, 92);
 
         map.setEndPlace(a_);
-        map.setStartPlace(b_);
+        map.setStartPlace(costco);
         System.out.println("Start place: " + map.getStartPlace());
         System.out.println("End place: " + map.getEndPlace());
 
