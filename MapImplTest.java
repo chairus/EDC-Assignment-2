@@ -19,6 +19,36 @@ public class MapImplTest {
     public static void main(String[] args) {
         MapImpl map = new MapImpl();
 
+        // Place p0 = map.newPlace("Node_" + 0, 0, 1);
+        // Place p1 = map.newPlace("Node_" + 1, 0, 1);
+        // Place p2 = map.newPlace("Node_" + 2, 0, 2);
+        // Place p3 = map.newPlace("Node_" + 3, 0, 4);
+        // Place p4 = map.newPlace("Node_" + 4, 2, 6);
+        // Place p5 = map.newPlace("Node_" + 5, 2, 7);
+        // Place p6 = map.newPlace("Node_" + 6, 3, 7);
+        // Place p7 = map.newPlace("Node_" + 7, 5, 8);
+        // Place p8 = map.newPlace("Node_" + 8, 8, 9);
+        // Place p9 = map.newPlace("Node_" + 9, 7, 9);
+        // Place p10 = map.newPlace("Node_" + 10, 4, 9);
+        
+        // map.newRoad(p0, p1, "Road0", 85);
+        // map.newRoad(p0, p2, "Road1", 217);
+        // map.newRoad(p0, p4, "Road2", 173);
+        // map.newRoad(p2, p6, "Road3", 186);
+        // map.newRoad(p2, p7, "Road4", 103);
+        // map.newRoad(p3, p7, "Road5", 183);
+        // map.newRoad(p5, p8, "Road6", 250);
+        // map.newRoad(p8, p9, "Road7", 84);
+        // map.newRoad(p7, p9, "Road8", 167);
+        // map.newRoad(p4, p9, "Road9", 502);
+        // map.newRoad(p9, p10, "Road10", 40);
+        // map.newRoad(p1, p10, "Road11", 600);
+
+        // map.setStartPlace(p0);
+        // map.setEndPlace(p10);
+
+        // System.out.println(map.getTripDistance());
+
         /**
          * ==============================================
          * TEST newPlace() METHOD
@@ -92,7 +122,7 @@ public class MapImplTest {
         Place a_ = new PlaceImpl("A_", 23, 92);
 
         map.setEndPlace(arndale);
-        // map.setStartPlace(cleland);
+        map.setStartPlace(cleland);
         System.out.println("Start place: " + map.getStartPlace());
         System.out.println("End place: " + map.getEndPlace());
 

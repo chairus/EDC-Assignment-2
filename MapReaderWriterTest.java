@@ -35,7 +35,7 @@ public class MapReaderWriterTest {
         System.out.print("Total distance from " + map.getStartPlace() + " to " + map.getEndPlace());
         System.out.println(": " + totalDistance);
         for (Road r: map.getRoads()) {
-            System.out.println(r.roadName() + " isChosen: " + r.isChosen());
+            System.out.println(r + " isChosen: " + r.isChosen());
         }
 
         try {

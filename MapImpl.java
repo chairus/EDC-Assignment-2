@@ -7,11 +7,14 @@
 package com.classes;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
-
 
 import java.util.LinkedHashSet;
 
@@ -433,44 +436,35 @@ public class MapImpl implements Map {
      */
     private int computeTotalDistance() {
         int totalDistance = -1;
-        List<ArrayList<Place>> setOfPlaces = new ArrayList<ArrayList<Place>>();
-        for (Place p: this.places) {    // Initialize each place to belong to it's own set
-            ArrayList<Place> tempList = new ArrayList<>();
-            tempList.add(p);
-            setOfPlaces.add(tempList); 
+        List<Place> finishedPlaces = new ArrayList<>();  // S in Cormen et al book
+        List<Road> roadsInSSSPSet = new ArrayList<>();  // Roads that are in the SSSP set
+
+        SSSP(finishedPlaces, roadsInSSSPSet);
+
+        if (finishedPlaces.contains(this.startPlace) &&
+            finishedPlaces.contains(this.endPlace)) {
+            totalDistance = findAndCalculateTrip(roadsInSSSPSet);
         }
+
+        // List<ArrayList<Place>> setOfPlaces = new ArrayList<ArrayList<Place>>();
+        // for (Place p: this.places) {    // Initialize each place to belong to it's own set
+        //     ArrayList<Place> tempList = new ArrayList<>();
+        //     tempList.add(p);
+        //     setOfPlaces.add(tempList); 
+        // }
         
-        List<Road> setOfRoads = new ArrayList<>(); // The roads that belong to the MST
-        List<Road> sortedRoads = new ArrayList<>(this.roads);
-        Collections.sort(sortedRoads, SortByLength);
+        // List<Road> setOfRoads = new ArrayList<>(); // The roads that belong to the MST
+        // List<Road> sortedRoads = new ArrayList<>(this.roads);
+        // Collections.sort(sortedRoads, SortByLength);
 
-        MST(sortedRoads, setOfPlaces, setOfRoads);        
+        // MST(sortedRoads, setOfPlaces, setOfRoads);        
 
-        if (setOfPlaces.get(0).contains(this.startPlace) &&
-            setOfPlaces.get(0).contains(this.endPlace)) {
-            totalDistance = findAndCalculateTrip(setOfRoads);
-        }
+        // if (setOfPlaces.get(0).contains(this.startPlace) &&
+        //     setOfPlaces.get(0).contains(this.endPlace)) {
+        //     totalDistance = findAndCalculateTrip(setOfRoads);
+        // }
 
         return totalDistance;
-    }
-
-    /**
-     * This method finds a road in the given list of roads where one end of it is equal to the given
-     * place argument. This method returns the found road otherwise null.
-     * @param rList - The list of roads
-     * @param p - The place to search for
-     * @return Road - The found road
-     */
-    private Road findRoadWithPlace(List<Road> rList, Place p) {
-        Road foundRoad = null;
-        for (Road r: rList) {
-            if (r.firstPlace().equals(p) || r.secondPlace().equals(p)) {
-                foundRoad = r;
-                break;
-            }
-        }
-        
-        return foundRoad;
     }
 
     /**
@@ -480,77 +474,77 @@ public class MapImpl implements Map {
      * is a partition in the graph) and the second list is the set of roads that belong to the 
      * MST set.
      */
-    private void MST(List<Road> sortedRoads, List<ArrayList<Place>> setOfPlaces, List<Road> setOfRoads) {
-        int numberOfPlaces = this.places.size();
+    // private void MST(List<Road> sortedRoads, List<ArrayList<Place>> setOfPlaces, List<Road> setOfRoads) {
+    //     int numberOfPlaces = this.places.size();
+    //     System.out.println(sortedRoads);
+    //     for (Road r: sortedRoads) {
+    //         findSetAndMergePlace(r, setOfPlaces, setOfRoads);
+    //     }
 
-        for (Road r: sortedRoads) {
-            findSetAndMergePlace(r, setOfPlaces, setOfRoads);
-        }
-
-        // System.out.println("MST roads: " + setOfRoads);
-        // System.out.println("Set of places: " + setOfPlaces);
-    }
+    //     System.out.println("MST roads: " + setOfRoads);
+    //     // System.out.println("Set of places: " + setOfPlaces);
+    // }
 
     /**
      * This method merges the two set that the two places belong to if they belong to different
-     * sets and returns true else false.
+     * sets.
      */
-    private void findSetAndMergePlace(Road r, List<ArrayList<Place>> sp, List<Road> sr) {
-        // i is the index of the set where p1 belongs to and j is the index of the set where p2
-        // belongs to in set s, and k is just a counter
-        int i = 0, j = 0, k = 0;
-        Place p1 = r.firstPlace();
-        Place p2 = r.secondPlace();
-        boolean foundSetForP1 = false;
-        boolean foundSetForP2 = false;
+    // private void findSetAndMergePlace(Road r, List<ArrayList<Place>> sp, List<Road> sr) {
+    //     // i is the index of the set where p1 belongs to and j is the index of the set where p2
+    //     // belongs to in set s, and k is just a counter
+    //     int i = 0, j = 0, k = 0;
+    //     Place p1 = r.firstPlace();
+    //     Place p2 = r.secondPlace();
+    //     boolean foundSetForP1 = false;
+    //     boolean foundSetForP2 = false;
         
-        while (k < sp.size()) {
-            if (sp.get(k).contains(p1) && !foundSetForP1) {
-                i = k;
-                foundSetForP1 = true;
-            }
+    //     while (k < sp.size()) {
+    //         if (sp.get(k).contains(p1) && !foundSetForP1) {
+    //             i = k;
+    //             foundSetForP1 = true;
+    //         }
 
-            if (sp.get(k).contains(p2) && !foundSetForP2) {
-                j = k;
-                foundSetForP2 = true;
-            }
+    //         if (sp.get(k).contains(p2) && !foundSetForP2) {
+    //             j = k;
+    //             foundSetForP2 = true;
+    //         }
 
-            if (foundSetForP1 && foundSetForP2) {
-                break;
-            }
-            k++;
-        }
+    //         if (foundSetForP1 && foundSetForP2) {
+    //             break;
+    //         }
+    //         k++;
+    //     }
 
-        ArrayList<Place> newSet;
-        // Merge two sets s1 and s2, if they belong to different sets and add the road to the 
-        // MST set.
-        if (i != j) {
-            newSet = sp.get(i);
-            newSet.addAll(sp.get(j));
-            sp.set(i, newSet);
-            sp.remove(j);
-            sr.add(r);
-        }
-    }
+    //     ArrayList<Place> newSet;
+    //     // Merge two sets s1 and s2, if they belong to different sets and add the road to the 
+    //     // MST set.
+    //     if (i != j) {
+    //         newSet = sp.get(i);
+    //         newSet.addAll(sp.get(j));
+    //         sp.set(i, newSet);
+    //         sp.remove(j);
+    //         sr.add(r);
+    //     }
+    // }
 
     /**
      * This method finds the roads that leads from start place to end place and returns the total distance.
      * It uses the depth-first-search(DFS) algorithm to find the roads.
-     * @param MSTroad - These are the roads that are in the minimum spanning tree set
+     * @param roadsInSSSPSet - These are the roads that are in the single-source-shortest-path set
      * @return int - The total distance of the trip
      */
-    public int findAndCalculateTrip(List<Road> MSTroad) {
+    public int findAndCalculateTrip(List<Road> roadsInSSSPSet) {
         int totalTrip = 0;
         Road road;
         List<Road> exploredRoads = new ArrayList<>();
-        List<Road> unexploredRoads = new ArrayList<>(MSTroad);
+        List<Road> unexploredRoads = new ArrayList<>(roadsInSSSPSet);
         List<Road> currentRoads = new ArrayList<>();    // Current roads being explored
         List<Place> currentPlaces = new ArrayList<>();  // Current places being explored
 
         currentPlaces.add(startPlace);
         // System.out.println("Current places: " + currentPlaces);
         while (!unexploredRoads.isEmpty()) {
-            road = findRoadWithPlace(unexploredRoads, currentPlaces.get(currentPlaces.size() - 1));
+            road = findRoadsWithPlace(unexploredRoads, currentPlaces.get(currentPlaces.size() - 1)).get(0);
             // System.out.println("Found road: " + road);
             if (road != null) {
                 unexploredRoads.remove(road);
@@ -586,15 +580,192 @@ public class MapImpl implements Map {
             this.roads.add(rImpl);
         }
 
+        // Iterator it = currentRoads.iterator();
+        // while (it.hasNext()) {
+        //     RoadImpl r = (RoadImpl)it.next();
+        //     totalTrip += r.length();
+        //     r.isChosen = true;
+        // }
+
         return totalTrip;
     }
 
     /**
      * This is used to sort the roads by their length in ascending order.
      */
-    private Comparator<Road> SortByLength  = new Comparator<Road>() {
-        public int compare(Road a, Road b) {
-            return a.length() - b.length();
+    // private Comparator<Road> SortByLength  = new Comparator<Road>() {
+    //     public int compare(Road a, Road b) {
+    //         return a.length() - b.length();
+    //     }
+    // };
+
+    /**
+     * This method runs Dijkstra's algorithm.
+     */
+    private void SSSP (List<Place> finishedPlaces, List<Road> roadsInSSSPSet) {
+        // A priority queue that stores a pair (place, estimatedDistance).
+        Queue<PlaceNode> placeNodePriorityQueue = new PriorityQueue<>(valueComparator);
+
+        initializeSingleSource(placeNodePriorityQueue, this.startPlace);
+        runSSSPAlgorithm(placeNodePriorityQueue, finishedPlaces, roadsInSSSPSet);
+    }
+
+    private void initializeSingleSource(Queue<PlaceNode> priorityQueue, Place sourceNode) {
+        for (Place p: this.places) {
+            if (p.equals(sourceNode)) {
+                priorityQueue.offer(new PlaceNode(sourceNode, 0));
+                continue;
+            }
+            priorityQueue.offer(new PlaceNode(p, Integer.MAX_VALUE));
+        }
+    }
+
+    private void runSSSPAlgorithm(Queue<PlaceNode> priorityQueue, 
+                                  List<Place> finishedPlaces,
+                                  List<Road> roadsInSSSPSet) {
+        while (!priorityQueue.isEmpty()) {
+            System.out.println("Initialized nodes: " + priorityQueue);
+            PlaceNode u = priorityQueue.poll();
+            System.out.println("Smallest estimate: " + u);
+            finishedPlaces.add(u.getPlaceNode());
+            boolean hasRelaxed = relaxEdge(u,priorityQueue, finishedPlaces, roadsInSSSPSet);
+            if (!hasRelaxed) {
+                break;
+            }
+            PlaceNode v = priorityQueue.peek();
+            List<Road> foundRoads = findRoadsWithPlace(new ArrayList<Road>(this.roads), v.getPlaceNode());
+            
+            for (Road r: foundRoads) {
+                if (r.firstPlace().equals(u.getPlaceNode()) || 
+                    r.secondPlace().equals(u.getPlaceNode())) {
+                    roadsInSSSPSet.add(r);
+                }
+            }
+            System.out.println("Roads in SSSP set: " + roadsInSSSPSet);
+        }
+    }
+
+    private boolean relaxEdge(PlaceNode pn, 
+                           Queue<PlaceNode> pq, 
+                           List<Place> finishedPlaces,
+                           List<Road> roadsInSSSPSet) {
+        List<Road> foundRoads = findRoadsWithPlace(new ArrayList<Road>(this.roads), pn.getPlaceNode());
+        boolean relaxed = false;
+
+        for (Road r: foundRoads) {
+            PlaceNode adjPlace = new PlaceNode(r.firstPlace(), 0);
+            if (r.firstPlace().equals(pn.getPlaceNode())) {
+                adjPlace = new PlaceNode(r.secondPlace(), 0);
+            }
+
+            // Check if the place is already in the current SSSP set, if not then relax
+            if (!finishedPlaces.contains(adjPlace.getPlaceNode())) {
+                adjPlace.setPlaceNodeValue(r.length() + pn.getPlaceNodeValue());
+
+                Iterator<PlaceNode> it = pq.iterator();
+                
+                for (PlaceNode u: pq) {
+                    if (u.equals(adjPlace)) {
+                        if (u.getPlaceNodeValue() > adjPlace.getPlaceNodeValue()) {
+                            // u.setPlaceNodeValue(adjPlace.getPlaceNodeValue());
+                            pq.remove(adjPlace);
+                            pq.offer(adjPlace);
+                            relaxed = true;
+                        }
+                        break;
+                    } 
+                }
+
+                // while (it.hasNext()) {
+                //     PlaceNode u = it.next();
+                //     if (u.equals(adjPlace)) {
+                //         if (u.getPlaceNodeValue() > adjPlace.getPlaceNodeValue()) {
+                //             u.setPlaceNodeValue(adjPlace.getPlaceNodeValue());
+                //             relaxed = true;
+                //         }
+                //         break;
+                //     } 
+                // }
+            }
+        }
+        return relaxed;
+    }
+
+    /**
+     * This method finds a subset of roads in the given list of roads where one end of it is equal to 
+     * the given place argument. This method returns the found road otherwise null.
+     * @param rList - The list of roads
+     * @param p - The place to search for
+     * @return Road - The found road
+     */
+    private List<Road> findRoadsWithPlace(List<Road> rList, Place p) {
+        List<Road> foundRoads = new ArrayList<>();
+        for (Road r: rList) {
+            if (r.firstPlace().equals(p) || r.secondPlace().equals(p)) {
+                foundRoads.add(r);
+            }
+        }
+        
+        return foundRoads;
+    }
+
+    /**
+     * A class that holds a name/key and it's value. This class is used to run Dijkstra's algorithm.
+     */
+    private class PlaceNode {
+        Place place;
+        int value;
+        public PlaceNode(Place place, int val) {
+            this.place = place;
+            this.value = val;
+        }
+
+        public Place getPlaceNode() {
+            return this.place;
+        }
+
+        public void setPlaceNodeValue(int val) {
+            this.value = val;
+        }
+
+        public int getPlaceNodeValue() {
+            return this.value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) {
+                return false;
+            }
+    
+            if (this == o) {
+                return true;
+            }
+    
+            if (!(o instanceof PlaceNode)) {
+                return false;
+            }
+
+            PlaceNode pn = (PlaceNode)o;
+            return this.place.equals(pn.getPlaceNode());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(place);
+        }
+
+        public String toString() {
+            return place.toString() + String.valueOf(value);
+        }
+    }
+
+    /**
+     * This is used to sort the node by their value/priority in ascending order.
+     */
+    public Comparator<PlaceNode> valueComparator  = new Comparator<PlaceNode>() {
+        public int compare(PlaceNode a, PlaceNode b) {
+            return a.getPlaceNodeValue() - b.getPlaceNodeValue();
         }
     };
 
