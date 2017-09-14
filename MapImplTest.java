@@ -47,7 +47,7 @@ public class MapImplTest {
         // map.setStartPlace(p0);
         // map.setEndPlace(p10);
 
-        // System.out.println(map.getTripDistance());
+        // System.out.println("Total trip distance: " + map.getTripDistance());
 
         /**
          * ==============================================

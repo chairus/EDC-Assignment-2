@@ -28,7 +28,7 @@ public class MapReaderWriterTest {
             e.getMessage();
             System.exit(1);
         }
-
+        
         System.out.println(map);
 
         int totalDistance = map.getTripDistance();

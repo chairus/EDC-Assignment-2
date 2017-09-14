@@ -289,38 +289,6 @@ public class MapImpl implements Map {
     /* ============================== DEFINED HELPER METHODS ============================== */
 
     /**
-     * Attempts to add a place in the map. If the place already exists in the map the method will
-     * return false, otherwise true and adds the place.
-     */
-    private boolean addPlace(Place place) {
-        for (Place p: this.places) {
-            if (place.equals(p)) {
-                return false;
-            }
-        }
-
-        this.places.add(place);
-
-        return true;
-    }
-
-    /**
-     * Attempts to add a road in the map. If the road already exists in the map the method will
-     * return false, otherwise true and adds the road.
-     */
-    private boolean addRoad(Road road) {
-        for (Road r: this.roads) {
-            if (road.equals(r)) {
-                return false;
-            }
-        }
-
-        this.roads.add(road);
-
-        return true;
-    }
-
-    /**
      * Checks if the given place name satisfies the requirements set out in the specification.
      * @param placeName - The name of the place
      * @return boolean - True if the name of the place is valid, False otherwise
@@ -389,15 +357,14 @@ public class MapImpl implements Map {
         List<Place> currentPlaces = new ArrayList<>();  // Current places being explored
 
         currentPlaces.add(startPlace);
-        // System.out.println("Current places: " + currentPlaces);
         while (!unexploredRoads.isEmpty() || !currentRoads.isEmpty()) {
             foundRoads = findRoadsWithPlace(unexploredRoads, currentPlaces.get(currentPlaces.size() - 1));
             if (foundRoads.size() > 0) {
                 Road road = foundRoads.get(0);
-                System.out.println("Found road: " + road);
+                // System.out.println("Found road: " + road);
                 unexploredRoads.remove(road);
                 currentRoads.add(road);
-                System.out.println("Unexplored roads: " + unexploredRoads);
+                // System.out.println("Unexplored roads: " + unexploredRoads);
                 // Check if one end of the found road is the end place
                 if (road.firstPlace().equals(endPlace) || road.secondPlace().equals(endPlace)) {
                     break;
@@ -413,8 +380,8 @@ public class MapImpl implements Map {
                 currentPlaces.remove(currentPlaces.size() - 1);
                 exploredRoads.add(currentRoads.remove(currentRoads.size() - 1));
             }
-            System.out.println("Current roads: " + currentRoads);
-            System.out.println("Current places: " + currentPlaces);
+            // System.out.println("Current roads: " + currentRoads);
+            // System.out.println("Current places: " + currentPlaces);
         }
 
         for (Road r: currentRoads) {
@@ -471,20 +438,22 @@ public class MapImpl implements Map {
                                   List<Road> roadsInSSSPSet) {
         // Stores the nodes where their shortest path from the source has already been determined.
         List<PlaceNode> finishedPlaceNodes = new ArrayList<>();
-        System.out.println("Initialized nodes: " + priorityQueue);
+        // System.out.println("Initialized nodes: " + priorityQueue);
         
         while (!priorityQueue.isEmpty()) {
             PlaceNode v = priorityQueue.poll();
-            System.out.println("Smallest estimate: " + v);
+            // System.out.println("Smallest estimate: " + v);
             finishedPlaces.add(v.getPlaceNode());
             finishedPlaceNodes.add(v);
             relaxEdge(v,priorityQueue, finishedPlaces, roadsInSSSPSet);
-            System.out.println("Relaxed nodes: " + priorityQueue);
-            v = priorityQueue.peek();
+            // System.out.println("Relaxed nodes: " + priorityQueue);
+            v = priorityQueue.peek();   // Check out the next node that has the smallest path estimate
             if (v != null) {
                 if (v.getPlaceNodeValue() < Integer.MAX_VALUE) {
                     List<Road> foundRoads = findRoadsWithPlace(new ArrayList<Road>(this.roads), v.getPlaceNode());
                     
+                    // Find out the road that connects the node that has the next smallest path estimate
+                    // and a node that has its path estimate already determined.
                     for (Road r: foundRoads) {
                         PlaceNode otherNode = new PlaceNode(r.firstPlace(), 0);
                         
@@ -500,12 +469,14 @@ public class MapImpl implements Map {
                             }
                         }
                     }
-                } else {    // This means that the graph has partitions
+                } else {
+                    // This means that the graph has partitions and that the algorithm has already found
+                    // the shortest path in the partition
                     break;
                 }   
             }
             
-            System.out.println("Roads in SSSP set: " + roadsInSSSPSet);
+            // System.out.println("Roads in SSSP set: " + roadsInSSSPSet);
         }
     }
 
