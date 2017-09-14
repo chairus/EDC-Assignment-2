@@ -122,12 +122,13 @@ public class MapImpl implements Map {
     //with a letter and is followed by optional letters and digits
     public Road newRoad(Place from, Place to, String roadName, int length) 
         throws IllegalArgumentException {
-        
-        if (this.findPlace(from.getName()) == null) {
+
+        if (from == null || to == null) {
             throw new IllegalArgumentException("Place does not exist.");
         }
 
-        if (this.findPlace(to.getName()) == null) {
+        if (this.findPlace(from.getName()) == null ||
+            this.findPlace(to.getName()) == null) {
             throw new IllegalArgumentException("Place does not exist.");
         }
 
@@ -197,6 +198,10 @@ public class MapImpl implements Map {
         this.startPlace = p;
         ((PlaceImpl)pl).setStartPlace(true);
         
+        // Invoke the method on each listener
+        for (MapListener ml: listeners) {
+            ml.otherChanged();
+        }
     }
 
 
@@ -233,6 +238,11 @@ public class MapImpl implements Map {
 
         this.endPlace = p;
         ((PlaceImpl)pl).setEndPlace(true);
+
+        // Invoke the method on each listener
+        for (MapListener ml: listeners) {
+            ml.otherChanged();
+        }
     }
 
 
@@ -368,6 +378,11 @@ public class MapImpl implements Map {
         public void moveBy(int dx, int dy) {
             this.xPos += dx;
             this.yPos += dy;
+
+            // Invoke the method on each listener
+            for (PlaceListener pl: placeListeners) {
+                pl.placeChanged();
+            }
         }
         
     
@@ -390,10 +405,20 @@ public class MapImpl implements Map {
     
         public void setStartPlace(boolean val) {
             isStart = val;
+
+            // Invoke the method on each listener
+            for (PlaceListener pl: placeListeners) {
+                pl.placeChanged();
+            }
         }
     
         public void setEndPlace(boolean val) {
             isEnd = val;
+
+            // Invoke the method on each listener
+            for (PlaceListener pl: placeListeners) {
+                pl.placeChanged();
+            }
         }
     
     
@@ -511,6 +536,14 @@ public class MapImpl implements Map {
             return this.secondPlace;
         }
         
+        public void setIsChosen(boolean val) {
+            isChosen = val;
+
+            // Invoke the method on each listener
+            for (RoadListener rl: roadListeners) {
+                rl.roadChanged();
+            }
+        }
     
         //Return true if this road is chosen as part of the current trip
         public boolean isChosen() {
@@ -534,9 +567,9 @@ public class MapImpl implements Map {
         //in the form (without quotes, of course!):
         //"firstPlace(roadName:length)secondPlace"
         public String toString() {
-            String str = new String(this.firstPlace +
+            String str = new String(this.firstPlace.getName() +
                             "(" + this.roadName + ":" + this.length + ")" + 
-                                    this.secondPlace);
+                                    this.secondPlace.getName());
     
             return str;
         }
@@ -694,7 +727,7 @@ public class MapImpl implements Map {
         for (Road r: currentRoads) {
             RoadImpl rImpl = (RoadImpl)r;
             totalTrip += r.length();
-            rImpl.isChosen = true;
+            rImpl.setIsChosen(true);
             this.roads.remove(r);
             this.roads.add(rImpl);
         }

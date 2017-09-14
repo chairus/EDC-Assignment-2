@@ -45,6 +45,11 @@ public class MapReaderWriter implements MapIo {
                     break;
                 default:
                     // Ignore comment and blank records
+                    if (strArr[0].length() != 0) {
+                        if (strArr[0].charAt(0) != '#') {
+                            throw new MapFormatException(lineNr, "Invalid keyword.");
+                        }
+                    }
                     break;
             }
             lineNr += 1;
@@ -114,6 +119,9 @@ public class MapReaderWriter implements MapIo {
 
     private void addPlace(String[] str, Map mp, int lineNr) throws MapFormatException {
         try {
+            if (str.length != 4) {
+                throw new MapFormatException(lineNr, "Missing place information.");
+            }
             mp.newPlace(str[1], Integer.parseInt(str[2]), Integer.parseInt(str[3]));  
         } catch (IllegalArgumentException e) {
             throw new MapFormatException(lineNr, e.getMessage());
@@ -123,19 +131,20 @@ public class MapReaderWriter implements MapIo {
 
     private void addRoad(String[] str, Map mp, int lineNr) throws MapFormatException{
         int len = 0;
+
+        if (str.length != 5) {
+            throw new MapFormatException(lineNr, "Missing road information.");
+        }
+
         String roadName = str[2];
         if (roadName.compareToIgnoreCase("-") == 0) {
             roadName = "";
         }
+
         Place from = mp.findPlace(str[1]);
         Place to = mp.findPlace(str[4]);
+
         try {
-            if (from == null || to == null) {
-                throw new IllegalArgumentException("Invalid first or second place.");
-            }
-            if ((len = Integer.parseInt(str[3])) < 0) {
-                throw new IllegalArgumentException("Negative road length.");
-            }
             mp.newRoad(from, to, roadName, len);    
         } catch (IllegalArgumentException e) {
             throw new MapFormatException(lineNr, e.getMessage());
@@ -144,8 +153,18 @@ public class MapReaderWriter implements MapIo {
     }
 
     private void setStartPlace(String[] str, Map mp, int lineNr) throws MapFormatException {
+        if (str.length != 2) {
+            throw new MapFormatException(lineNr, "Missing start place information.");
+        }
+
         try {
-            Place startPlace = mp.findPlace(str[1]);
+            Place startPlace = null;
+            if (str[1].compareToIgnoreCase("null") != 0) {
+                startPlace = mp.findPlace(str[1]);
+                if (startPlace == null) {
+                    startPlace = ((MapImpl)mp).new PlaceImpl(str[1], 0, 0);
+                }
+            }
             mp.setStartPlace(startPlace);
         } catch (IllegalArgumentException e) {
             throw new MapFormatException(lineNr, e.getMessage());
@@ -153,8 +172,18 @@ public class MapReaderWriter implements MapIo {
     }
 
     private void setEndPlace(String[] str, Map mp, int lineNr) throws MapFormatException {
+        if (str.length != 2) {
+            throw new MapFormatException(lineNr, "Missing end place information.");
+        }
+
         try {
-            Place endPlace = mp.findPlace(str[1]);
+            Place endPlace = null;
+            if (str[1].compareToIgnoreCase("null") != 0) {
+                endPlace = mp.findPlace(str[1]);
+                if (endPlace == null) {
+                    endPlace = ((MapImpl)mp).new PlaceImpl(str[1], 0, 0);
+                }
+            }
             mp.setEndPlace(endPlace);
         } catch (IllegalArgumentException e) {
             throw new MapFormatException(lineNr, e.getMessage());
