@@ -713,10 +713,8 @@ public class MapImpl implements Map {
             foundRoads = findRoadsWithPlace(unexploredRoads, currentPlaces.get(currentPlaces.size() - 1));
             if (foundRoads.size() > 0) {
                 Road road = foundRoads.get(0);
-                // System.out.println("Found road: " + road);
                 unexploredRoads.remove(road);
                 currentRoads.add(road);
-                // System.out.println("Unexplored roads: " + unexploredRoads);
                 // Check if one end of the found road is the end place
                 if (road.firstPlace().equals(endPlace) || road.secondPlace().equals(endPlace)) {
                     break;
@@ -732,8 +730,6 @@ public class MapImpl implements Map {
                 currentPlaces.remove(currentPlaces.size() - 1);
                 exploredRoads.add(currentRoads.remove(currentRoads.size() - 1));
             }
-            // System.out.println("Current roads: " + currentRoads);
-            // System.out.println("Current places: " + currentPlaces);
         }
 
         for (Road r: currentRoads) {
@@ -760,6 +756,8 @@ public class MapImpl implements Map {
 
     /**
      * This method invokes the methods to run the Dijkstra's algorithm.
+     * @param finishedPlaces [description]
+     * @param roadsInSSSPSet [description]
      */
     private void SSSP (List<Place> finishedPlaces, List<Road> roadsInSSSPSet) {
         // A priority queue that stores a pair (place, estimatedDistance).
@@ -770,7 +768,9 @@ public class MapImpl implements Map {
     }
 
     /**
-     * 
+     * Initializes the nodes before running Dijkstra's algorithm on them
+     * @param priorityQueue [description]
+     * @param sourceNode    [description]
      */
     private void initializeSingleSource(Queue<PlaceNode> priorityQueue, Place sourceNode) {
         for (Place p: this.places) {
@@ -783,7 +783,10 @@ public class MapImpl implements Map {
     }
 
     /**
-     * This method 
+     * This method is the implementation of Dijkstra's algorithm
+     * @param priorityQueue  [description]
+     * @param finishedPlaces [description]
+     * @param roadsInSSSPSet [description]
      */
     private void runSSSPAlgorithm(Queue<PlaceNode> priorityQueue, 
                                   List<Place> finishedPlaces,
@@ -794,11 +797,9 @@ public class MapImpl implements Map {
         
         while (!priorityQueue.isEmpty()) {
             PlaceNode v = priorityQueue.poll();
-            // System.out.println("Smallest estimate: " + v);
             finishedPlaces.add(v.getPlaceNode());
             finishedPlaceNodes.add(v);
             relaxEdge(v,priorityQueue, finishedPlaces, roadsInSSSPSet);
-            // System.out.println("Relaxed nodes: " + priorityQueue);
             v = priorityQueue.peek();   // Check out the next node that has the smallest path estimate
             if (v != null) {
                 if (v.getPlaceNodeValue() < Integer.MAX_VALUE) {
@@ -827,8 +828,6 @@ public class MapImpl implements Map {
                     break;
                 }   
             }
-            
-            // System.out.println("Roads in SSSP set: " + roadsInSSSPSet);
         }
     }
 
@@ -890,6 +889,7 @@ public class MapImpl implements Map {
     /**
      * A class that holds a name/key and it's value. This class is used to represet a node and its
      * current path estimate in Dijkstra's algorithm.
+     * @author cyrusvillacampa
      */
     private class PlaceNode {
         Place place;
