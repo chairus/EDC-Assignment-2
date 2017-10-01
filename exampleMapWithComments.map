@@ -45,7 +45,7 @@ road Avoca Sunrasia 63 StArnaud
 road Avoca Sunrasia 71 Ballarat
 road Keith Riddoch 213 MtGambier
 road Kingston Princes1 199 TailemBend
-This is an invalid line starting with an invalid keyword
+#This is an invalid line starting with an invalid keyword
 road Kingston Princes1 157 MtGambier
 road Melbourne Princes1 116 Morwell
 road Morwell Princes1 63 Sale
