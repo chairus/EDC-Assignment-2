@@ -85,8 +85,20 @@ public class MapImpl implements Map {
             for (MapListener ml: listeners) {
                 ml.placesChanged();
             }
+            // And remove all roads associated with this place
+            ArrayList<Road> roadsToBeRemoved = new ArrayList<>();
+            Iterator it = roads.iterator();
+            while (it.hasNext()) {
+                Road road = (Road)it.next();
+                if (road.firstPlace().equals(s) || road.secondPlace().equals(s)) {
+                    roadsToBeRemoved.add(road);
+                }
+            }
+            while (!roadsToBeRemoved.isEmpty()) {
+                roads.remove(roadsToBeRemoved.get(0));
+                roadsToBeRemoved.remove(0);
+            }
         }
-        
     }
 
 
