@@ -7,26 +7,4 @@ public class RoadListenerImpl implements RoadListener {
     public void roadChanged() {
 
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof RoadListener)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(this);
-    }
 }

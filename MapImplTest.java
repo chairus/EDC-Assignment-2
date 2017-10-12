@@ -52,6 +52,17 @@ public class MapImplTest {
 
         /**
          * ==============================================
+         * TEST addListener() method
+         * ==============================================
+         */
+        System.out.println("==============================================");
+        System.out.println("\t TEST MapListeners");
+        System.out.println("==============================================");
+        MapListener ml = testMapListeners(map);
+        System.out.println("Added map listeners");
+
+        /**
+         * ==============================================
          * TEST newPlace() METHOD
          * ==============================================
          */
@@ -74,6 +85,16 @@ public class MapImplTest {
         map.printPlaces();
         /**
          * ==============================================
+         * TEST deleteListener() method
+         * ==============================================
+         */
+        System.out.println("==============================================");
+        System.out.println("\t TEST deleteListener() method");
+        System.out.println("==============================================");
+        testDeleteListener(map, ml);
+        System.out.println("Deleted a map listener");
+        /**
+         * ==============================================
          * TEST newRoad() METHOD
          * ==============================================
          */
@@ -94,6 +115,16 @@ public class MapImplTest {
         testDeleteRoadMethod(map);
         System.out.print("Current roads stored in the map: ");
         map.printRoads();
+        /**
+         * ==============================================
+         * TEST toString() METHOD
+         * ==============================================
+         */
+        System.out.println("==============================================");
+        System.out.println("\t TEST toString() method of map");
+        System.out.println("==============================================");
+        System.out.print("String representation of the map: \n");
+        System.out.println(map);
         /**
          * ==============================================
          * TEST setStartPlace() METHOD
@@ -150,6 +181,16 @@ public class MapImplTest {
 
 
         printTestCasesResult(numberOfTestCases, numberOfTestCasesPassed);
+    }
+
+    private static MapListener testMapListeners(MapImpl map) {
+        MapListener ml = new MapListenerImpl();
+        map.addListener(ml);
+        return ml;
+    }
+
+    private static void testDeleteListener(MapImpl map, MapListener ml) {
+        map.deleteListener(ml);
     }
 
     private static void testNewPlaceMethod(MapImpl map) {

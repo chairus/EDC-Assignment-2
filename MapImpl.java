@@ -22,7 +22,7 @@ public class MapImpl implements Map {
     private Set<Place> places;  // contains the places read from a map file
     private Set<Road> roads;    // contains the roads read from a map file
     private Place startPlace, endPlace;   // contains the starting and ending place
-    private List<MapListener> listeners;    // contains the listeners of this map
+    private List<MapListener> mapListeners;    // contains the listeners of this map
 
     // Constructor
     public MapImpl() {
@@ -30,19 +30,27 @@ public class MapImpl implements Map {
         this.roads = new LinkedHashSet<>();
         this.startPlace = null;
         this.endPlace = null;
-        this.listeners = new ArrayList<>();
+        this.mapListeners = new ArrayList<>();
     }
 
     //Add the MapListener ml to this map.
     //Note: A map can have multiple listeners
     public void addListener(MapListener ml) {
-        this.listeners.add(ml);
+        if (ml != null && !mapListeners.contains(ml)) {
+            if (this.mapListeners.add(ml)) {
+                // NOTIFY MAPLISTENER IT WILL BE ADDED
+            }
+        }
     }
     
     
     //Delete the MapListener ml from this map.
     public void deleteListener(MapListener ml) {
-        this.listeners.remove(ml);
+        if (ml != null) {
+            if (this.mapListeners.remove(ml)) {
+                // NOTIFY MAPLISTENER IT WILL BE REMOVED
+            }
+        }
     }
 
 
@@ -56,21 +64,26 @@ public class MapImpl implements Map {
     public Place newPlace(String placeName, int xPos, int yPos)
         throws IllegalArgumentException {
         
+        if (placeName == null) {
+            throw new IllegalArgumentException("Place name cannot be null.");
+        }
+
         if (!checkPlaceName(placeName)) {
             throw new IllegalArgumentException("Invalid place name.");
         }
 
-        if (findPlace(placeName) != null) {
+        PlaceImpl place = new PlaceImpl(placeName, xPos, yPos);
+        if (findPlace(placeName) != null || this.places.contains(place)) {
             throw new IllegalArgumentException("Place already exist.");
         }
 
-        Place place = new PlaceImpl(placeName, xPos, yPos);
-        
-        places.add(place);
-        
-        // Invoke the method on each listener
-        for (MapListener ml: listeners) {
-            ml.placesChanged();
+        if (places.add(place)) {
+            // Invoke the method on each listener
+            for (MapListener ml: mapListeners) {
+                ml.placesChanged();
+            }
+        } else {
+            throw new IllegalArgumentException("Place already exist.");
         }
 
         return place;
@@ -80,23 +93,26 @@ public class MapImpl implements Map {
     //Remove a place from the map
     //If the place does not exist, returns without error
     public void deletePlace(Place s) {
-        if (places.remove(s)) {
-            // Invoke the method on each listener
-            for (MapListener ml: listeners) {
-                ml.placesChanged();
-            }
-            // And remove all roads associated with this place
-            ArrayList<Road> roadsToBeRemoved = new ArrayList<>();
-            Iterator it = roads.iterator();
-            while (it.hasNext()) {
-                Road road = (Road)it.next();
-                if (road.firstPlace().equals(s) || road.secondPlace().equals(s)) {
-                    roadsToBeRemoved.add(road);
+        if (s != null) {
+            if (places.remove(s)) {
+                // Invoke the method on each listener
+                for (MapListener ml: mapListeners) {
+                    ml.placesChanged();
                 }
-            }
-            while (!roadsToBeRemoved.isEmpty()) {
-                roads.remove(roadsToBeRemoved.get(0));
-                roadsToBeRemoved.remove(0);
+                // Invoke the method on each place listener
+                for (PlaceListener pl: ((PlaceImpl)s).getListeners()) {
+                    pl.placeChanged();
+                }
+                // And remove all roads associated with this place
+                removeRoads(s);
+                // Also set the end and/or start place to null if the end and/or 
+                // start place is set to the deleted place
+                if (this.startPlace != null && this.startPlace.equals(s)) {
+                    this.startPlace = null;
+                }
+                if (this.endPlace != null && this.endPlace.equals(s)) {
+                    this.endPlace = null;
+                }
             }
         }
     }
@@ -106,11 +122,12 @@ public class MapImpl implements Map {
     //If no place exists with given name, return NULL
     public Place findPlace(String placeName) {
         Place p = null;
-
-        for (Place place: places) {
-            if (place.getName().compareToIgnoreCase(placeName) == 0) {
-                p = place;
-                break;
+        if (placeName != null) {
+            for (Place place: places) {
+                if (place.getName().compareTo(placeName) == 0) {
+                    p = place;
+                    break;
+                }
             }
         }
 
@@ -120,7 +137,8 @@ public class MapImpl implements Map {
 
     //Return a set containing all the places in this map
     public Set<Place> getPlaces() {
-        return this.places;
+        Set<Place> placesCopy = new LinkedHashSet<>(this.places);
+        return placesCopy;
     }
     
 
@@ -136,7 +154,7 @@ public class MapImpl implements Map {
         throws IllegalArgumentException {
 
         if (from == null || to == null) {
-            throw new IllegalArgumentException("Place does not exist.");
+            throw new IllegalArgumentException("Place cannot be null.");
         }
 
         if (this.findPlace(from.getName()) == null ||
@@ -144,19 +162,22 @@ public class MapImpl implements Map {
             throw new IllegalArgumentException("Place does not exist.");
         }
 
-        if (!checkRoadName(roadName)) {
-            throw new IllegalArgumentException("Invalid road name.");
-        }
-
-        if (length < 0) {
-            throw new IllegalArgumentException("Negative road length.");
+        if (roadName == null) {
+            throw new IllegalArgumentException("Road name cannot be null.");
         }
 
         Road r = new RoadImpl(from, to, roadName, length);
-        roads.add(r);
+        if (!checkRoadName(roadName) || this.roads.contains(r)) {
+            throw new IllegalArgumentException("Invalid road name.");
+        }
 
+        if (length <= 0) {
+            throw new IllegalArgumentException("Negative/Zero road length.");
+        }
+
+        roads.add(r);
         // Invoke the method on each listener
-        for (MapListener ml: listeners) {
+        for (MapListener ml: mapListeners) {
             ml.roadsChanged();
         }
 
@@ -167,10 +188,16 @@ public class MapImpl implements Map {
     //Remove a road r from the map
     //If the road does not exist, returns without error
     public void deleteRoad(Road r) {
-        if (roads.remove(r)) {
-            // Invoke the method on each listener
-            for (MapListener ml: listeners) {
-                ml.roadsChanged();
+        if (r != null) {
+            if (roads.remove(r)) {
+                // Invoke the method on each listener
+                for (MapListener ml: mapListeners) {
+                    ml.roadsChanged();
+                }
+                // Invoke the method on each road listener
+                for (RoadListener rl: ((RoadImpl)r).getListeners()) {
+                    rl.roadChanged();
+                }
             }
         }
     }
@@ -178,7 +205,8 @@ public class MapImpl implements Map {
 
     //Return a set containing all the roads in this map
     public Set<Road> getRoads() {
-        return this.roads;
+        Set<Road> roadsCopy = new LinkedHashSet<>(this.roads);
+        return roadsCopy;
     }
     
 
@@ -190,8 +218,9 @@ public class MapImpl implements Map {
     
         if (p == null) {
             if (this.startPlace != null) {
-                PlaceImpl placeImpl = (PlaceImpl)this.findPlace(this.startPlace.getName());
-                placeImpl.setStartPlace(false);
+                // PlaceImpl placeImpl = (PlaceImpl)this.findPlace(this.startPlace.getName());
+                // placeImpl.setStartPlace(false);
+                ((PlaceImpl)this.startPlace).setStartPlace(false);
             }
             this.startPlace = null;
             return;
@@ -207,13 +236,8 @@ public class MapImpl implements Map {
             throw new IllegalArgumentException("Place not found.");
         }
 
-        this.startPlace = p;
+        this.startPlace = pl;
         ((PlaceImpl)pl).setStartPlace(true);
-        
-        // Invoke the method on each listener
-        for (MapListener ml: listeners) {
-            ml.otherChanged();
-        }
     }
 
 
@@ -231,15 +255,15 @@ public class MapImpl implements Map {
 
         if (p == null) {
             if (this.endPlace != null) {
-                PlaceImpl placeImpl = (PlaceImpl)this.findPlace(this.endPlace.getName());
-                placeImpl.setEndPlace(false);
+                // PlaceImpl placeImpl = (PlaceImpl)this.findPlace(this.endPlace.getName());
+                // placeImpl.setEndPlace(false);
+                ((PlaceImpl)this.endPlace).setEndPlace(false);
             }
             this.endPlace = null;
             return;
         }
         
         Place pl = this.findPlace(p.getName());
-
         if (pl == null) {
             throw new IllegalArgumentException("Place not found.");
         }
@@ -248,13 +272,8 @@ public class MapImpl implements Map {
             throw new IllegalArgumentException("Place not found.");
         }
 
-        this.endPlace = p;
+        this.endPlace = pl;
         ((PlaceImpl)pl).setEndPlace(true);
-
-        // Invoke the method on each listener
-        for (MapListener ml: listeners) {
-            ml.otherChanged();
-        }
     }
 
 
@@ -275,7 +294,8 @@ public class MapImpl implements Map {
             return -1;
         }
 
-        if (this.startPlace.equals(this.endPlace)) {
+        if (this.startPlace.equals(this.endPlace) ||
+            ((this.startPlace.getX() == this.endPlace.getX()) && (this.startPlace.getY() == this.endPlace.getY()))) {
             return 0;
         }
         
@@ -297,20 +317,20 @@ public class MapImpl implements Map {
     public String toString() {
         String str = "";
 
-        for (Place place: places) {
+        for (Place place: this.places) {
             str += "PLACE " + place.toString() + "\n";
         }
 
-        for (Road road: roads) {
+        for (Road road: this.roads) {
             str += "ROAD " + road.toString() + "\n";
         }
 
-        if (startPlace != null) {
-            str += "START " + startPlace.getName() + "\n";
+        if (this.startPlace != null) {
+            str += "START " + this.startPlace.getName() + "\n";
         }
 
-        if (endPlace != null) {
-            str += "END " + endPlace.getName() + "\n";
+        if (this.endPlace != null) {
+            str += "END " + this.endPlace.getName() + "\n";
         }
 
         return str;
@@ -344,13 +364,26 @@ public class MapImpl implements Map {
         //Add the PlaceListener pl to this place. 
         //Note: A place can have multiple listeners
         public void addListener(PlaceListener pl) {
-            placeListeners.add(pl);
+            if (pl != null && !placeListeners.contains(pl)) {
+                if (placeListeners.add(pl)) {
+                    // INFORM PLACELISTENER WILL BE ADDED
+                }
+            }
         }
     
     
         //Delete the PlaceListener pl from this place.
         public void deleteListener(PlaceListener pl) {
-            placeListeners.remove(pl);
+            if (pl != null) {
+                if (placeListeners.remove(pl)) {
+                    // INFORM PLACELISTENER WILL BE REMOVED
+                }
+            }
+        }
+
+        // Returns a list of listeners to this place
+        public List<PlaceListener> getListeners() {
+            return this.placeListeners;
         }
     
     
@@ -373,10 +406,13 @@ public class MapImpl implements Map {
         public Road roadTo(Place dest) {
             Road road = null;
     
-            for (Road r: roads) {
-                if (r.firstPlace().equals(this) || r.secondPlace().equals(this)) {
-                    if (r.firstPlace().equals(dest) || r.secondPlace().equals(dest)) {
-                        road = r;
+            if (dest != null) {
+                for (Road r: roads) {
+                    if (r.firstPlace().equals(this) || r.secondPlace().equals(this)) {
+                        if (r.firstPlace().equals(dest) || r.secondPlace().equals(dest)) {
+                            road = r;
+                            break;
+                        }
                     }
                 }
             }
@@ -391,12 +427,23 @@ public class MapImpl implements Map {
             this.xPos += dx;
             this.yPos += dy;
 
-            // Invoke the method on each listener
+            // Invoke the method on each place listener
             for (PlaceListener pl: placeListeners) {
                 pl.placeChanged();
             }
+            // Invoke the method on each map listener
+            for (MapListener ml: mapListeners) {
+                ml.otherChanged();
+            }
+            // Invoke the method road listeners of a road associated to this place
+            for (Road road: roads) {
+                if (road.firstPlace().equals(this) || road.secondPlace().equals(this)) {
+                    for (RoadListener rl: ((RoadImpl)road).getListeners()) {
+                        rl.roadChanged();
+                    }
+                }
+            }
         }
-        
     
         //Return the name of this place 
         public String getName() {
@@ -417,19 +464,25 @@ public class MapImpl implements Map {
     
         public void setStartPlace(boolean val) {
             isStart = val;
-
             // Invoke the method on each listener
             for (PlaceListener pl: placeListeners) {
                 pl.placeChanged();
+            }
+            // Invoke the method on each map listener
+            for (MapListener ml: mapListeners) {
+                ml.otherChanged();
             }
         }
     
         public void setEndPlace(boolean val) {
             isEnd = val;
-
             // Invoke the method on each listener
             for (PlaceListener pl: placeListeners) {
                 pl.placeChanged();
+            }
+            // Invoke the method on each map listener
+            for (MapListener ml: mapListeners) {
+                ml.otherChanged();
             }
         }
     
@@ -456,40 +509,6 @@ public class MapImpl implements Map {
     
             return str;
         }
-    
-        @Override
-        public boolean equals(Object p) {
-            if (p == null) {
-                return false;
-            }
-    
-            if (this == p) {
-                return true;
-            }
-    
-            if (!(p instanceof PlaceImpl)) {
-                return false;
-            }
-    
-            return equalsHelper(p);
-        }
-    
-        private boolean equalsHelper(Object p) {
-            PlaceImpl pl = (PlaceImpl)p;
-    
-            if (pl.getName().compareTo(this.placeName) != 0 ||
-                pl.getX() != this.xPos ||
-                pl.getY() != this.yPos) {
-                return false;
-            }
-    
-            return true;
-        }
-    
-        @Override
-        public int hashCode() {
-            return Objects.hash(placeName, xPos, yPos);
-        }
     }
 
     /* ==================================================================================== */
@@ -509,7 +528,7 @@ public class MapImpl implements Map {
         private Place firstPlace, secondPlace;
         private String roadName;
         private int length; // kilometres
-        public boolean isChosen;
+        private boolean isChosen;
         private List<RoadListener> roadListeners;
     
         public RoadImpl(Place place1, Place place2, String roadName, int length) {
@@ -523,15 +542,27 @@ public class MapImpl implements Map {
         //Add the RoadListener rl to this place.
         //Note: A road can have multiple listeners
         public void addListener(RoadListener rl) {
-            roadListeners.add(rl);
+            if (rl != null && !roadListeners.contains(rl)) {
+                if (roadListeners.add(rl)) {
+                    // INFORM ROADLISTENER WILL BE ADDED
+                }
+            }
         }
     
     
         //Delete the RoadListener rl from this place.
         public void deleteListener(RoadListener rl) {
-            roadListeners.remove(rl);
+            if (rl != null) {
+                if (roadListeners.remove(rl)) {
+                    // INFORM ROADLISTENER WILL BE REMOVED
+                }
+            }
         }
-    
+
+        //Returns a list of the listeners of this road
+        public List<RoadListener> getListeners() {
+            return this.roadListeners;
+        }
     
         //Return the first place of this road
         //Note: The first place of a road is the place whose name
@@ -554,6 +585,10 @@ public class MapImpl implements Map {
             // Invoke the method on each listener
             for (RoadListener rl: roadListeners) {
                 rl.roadChanged();
+            }
+            // Invoke the method on each map listener
+            for (MapListener ml: mapListeners) {
+                ml.otherChanged();
             }
         }
     
@@ -586,41 +621,6 @@ public class MapImpl implements Map {
             return str;
         }
     
-        @Override
-        public boolean equals(Object r) {
-            if (r == null) {
-                return false;
-            }
-    
-            if (this == r) {
-                return true;
-            }
-    
-            if (!(r instanceof RoadImpl)) {
-                return false;
-            }
-    
-            return equalsHelper(r);
-        }
-    
-        private boolean equalsHelper(Object r) {
-            RoadImpl rd = (RoadImpl)r;
-    
-            if (rd.roadName().compareTo(this.roadName) != 0 ||
-                !rd.firstPlace().equals(this.firstPlace) ||
-                !rd.secondPlace().equals(this.secondPlace) ||
-                rd.length() != this.length) {
-                return false;
-            }
-    
-            return true;
-        }
-    
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.roadName, this.firstPlace, this.secondPlace, this.length);
-        }
-    
         private void storePlaces(Place p1, Place p2) {
             if (p1.getName().compareTo(p2.getName()) < 0) {
                 this.firstPlace = p1;
@@ -639,6 +639,26 @@ public class MapImpl implements Map {
     /* ==================================================================================== */
     /* ========================== DEFINED HELPER METHODS(START) =========================== */
     /* ==================================================================================== */
+
+    /**
+     * Removes the roads associated to a place.
+     * @param p - A place
+     */
+    private void removeRoads(Place p) {
+        // And remove all roads associated with this place
+        ArrayList<Road> roadsToBeRemoved = new ArrayList<>();
+        Iterator it = roads.iterator();
+        while (it.hasNext()) {
+            Road road = (Road)it.next();
+            if (road.firstPlace().equals(p) || road.secondPlace().equals(p)) {
+                roadsToBeRemoved.add(road);
+            }
+        }
+        while (!roadsToBeRemoved.isEmpty()) {
+            this.deleteRoad(roadsToBeRemoved.get(0));
+            roadsToBeRemoved.remove(0);
+        }
+    }
 
     /**
      * Checks if the given place name satisfies the requirements set out in the specification.
@@ -667,7 +687,7 @@ public class MapImpl implements Map {
      */
     private boolean checkRoadName(String roadName) {
         String regex = "([a-zA-Z]([a-zA-Z]|\\d)*)";
-        // check if the roadName starts with a letter and followed by zero or more letters and digits.
+        // check if the roadName starts with a letter and followed by zero or more letters or digits or combination.
         if (roadName != "") {
             if (!roadName.matches(regex)) {
                 return false;

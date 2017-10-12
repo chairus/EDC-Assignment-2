@@ -24,12 +24,15 @@ public class MapReaderWriter implements MapIo {
     //Read the description of a map from the 
     //Reader r, and transfers it to Map, m.
     public void read (Reader r, Map m) throws IOException, MapFormatException {
+        if (r == null) {
+            throw new IOException("Reader object cannot be null");
+        }
         BufferedReader buffReader = new BufferedReader(r);
         String line;
         int lineNr = 1;
         String regex = "\\s+";
         while ((line = buffReader.readLine()) != null) {
-            String[] strArr = line.split(regex);
+            String[] strArr = line.trim().split(regex);
             switch (strArr[0].toLowerCase()) {
                 case "place":
                     addPlace(strArr, m, lineNr);        
@@ -58,6 +61,9 @@ public class MapReaderWriter implements MapIo {
   
     //Write a representation of the Map, m, to the Writer w.
     public void write(Writer w, Map m) throws IOException {
+        if (w == null) {
+            throw new IOException("Writer object cannot be null");
+        }
         BufferedWriter buffWriter = new BufferedWriter(w);
         Set<Place> places = m.getPlaces();
         Set<Road> roads = m.getRoads();
@@ -66,7 +72,6 @@ public class MapReaderWriter implements MapIo {
             writePlace(p, buffWriter);
         }
 
-        buffWriter.newLine();
         buffWriter.flush();
 
         for (Road r: roads) {
@@ -118,12 +123,12 @@ public class MapReaderWriter implements MapIo {
     }
 
     private void addPlace(String[] str, Map mp, int lineNr) throws MapFormatException {
+        if (str.length != 4) {
+            throw new MapFormatException(lineNr, "Missing place information.");
+        }
         try {
-            if (str.length != 4) {
-                throw new MapFormatException(lineNr, "Missing place information.");
-            }
             mp.newPlace(str[1], Integer.parseInt(str[2]), Integer.parseInt(str[3]));  
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             throw new MapFormatException(lineNr, e.getMessage());
         }
         
@@ -143,7 +148,11 @@ public class MapReaderWriter implements MapIo {
 
         Place from = mp.findPlace(str[1]);
         Place to = mp.findPlace(str[4]);
-        len = Integer.parseInt(str[3]);
+        try {
+            len = Integer.parseInt(str[3]);
+        } catch (NumberFormatException e) {
+            throw new MapFormatException(lineNr, e.getMessage());
+        }
 
         try {
             mp.newRoad(from, to, roadName, len);    
